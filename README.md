@@ -6,6 +6,21 @@ You can use this e. g.:
     xmlns:hhs="http://typo3.org/ns/HauerHeinrich/HhSeo/ViewHelpers"
     data-namespace-typo3-fluid="true">
 
+<hhs:MetaTag order="0" data='{
+    "headerData":
+    {
+        "title": "{data.title}",
+        "description": "{data.description}",
+        "designer": "",
+        "theme-color": "",
+
+        "og:title": "{data.og_title}"
+    }
+}'>
+</hhs:MetaTag>
+
+OR like
+
 <hhs:MetaTag order="0">
     {
         "headerData":

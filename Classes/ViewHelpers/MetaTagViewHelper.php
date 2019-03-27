@@ -37,11 +37,14 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 class MetaTagViewHelper extends AbstractViewHelper {
+
     public function initializeArguments() {
         $this->registerArgument('order', 'int', 'Ordering int', true);
         $this->registerArgument('type', 'string', 'def. type', false);
         $this->registerArgument('title', 'string', 'New title string', false);
         $this->registerArgument('description', 'string', 'New description string', false);
+
+        $this->registerArgument('data', 'array', 'Array', false);
     }
 
     /**
@@ -52,13 +55,14 @@ class MetaTagViewHelper extends AbstractViewHelper {
      * @return string
      */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
-
         if((int)$arguments['order'] > (int)$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag']['order']) {
             $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag']['order'] = (int)$arguments['order'];
 
-            if(null !== $renderChildrenClosure()) {
+            if($renderChildrenClosure() !== null && empty($renderChildrenClosure()) && $renderChildrenClosure() !== '') {
                 $newHeaderData = json_decode($renderChildrenClosure(), true);
                 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'] = array_replace_recursive($GLOBALS['TYPO3_CONF_VARS'], $newHeaderData);
+            } else if(isset($arguments['data'])) {
+                $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'] = array_replace_recursive($GLOBALS['TYPO3_CONF_VARS'], $arguments['data']);
             } else {
                 $headerChanges = [];
 
