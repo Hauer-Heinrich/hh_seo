@@ -1,0 +1,33 @@
+{
+    "name": "hauerheinrich/hh_seo",
+    "type": "typo3-cms-extension",
+    "description": "",
+    "authors": [
+        {
+            "name": "Christian Hackl",
+            "email": "chackl@hauer-heinrich.de",
+            "homepage": "http://www.hauer-heinrich.de",
+            "role": "Developer"
+        }
+    ],
+    "version": "0.1.0",
+    "license": ["GPL-2.0-or-later"],
+    "keywords": ["TYPO3 CMS", "SEO", "Extension"],
+    "replace": {
+        "hh_seo": "self.version",
+        "typo3-ter/hh-seo": "self.version"
+    },
+    "require": {
+        "typo3/cms-core": "^9.5.0 || ^9.5.99"
+    },
+    "autoload": {
+        "psr-4": {
+            "HauerHeinrich\\HhSeo\\": "Classes"
+        }
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "hh_seo"
+        }
+    }
+}

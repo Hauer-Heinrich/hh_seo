@@ -1,0 +1,15 @@
+################################################################
+### Disable Output of HeaderData /-Tags ###
+################################################################
+config {
+    noPageTitle = 2
+}
+
+page {
+    meta {
+        description >
+        abstract >
+        author >
+        keywords >
+    }
+}
