@@ -19,6 +19,8 @@ class PageDataHook {
     public function addPageData(&$parameters) {
         $headerData = $this->additionalData['headerData'];
 
+        DebuggerUtility::var_dump($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']);
+
         $newData = '';
         if($headerData['title']) {
             $newData .= "<title>{$headerData['title']}</title>";
@@ -42,95 +44,96 @@ class PageDataHook {
             $processingInstructions = [
                 // Apple
                 'apple' => [
-                    [
-                        'width' => '57',
-                        'height' => '57'
-                    ],
-                    [
-                        'width' => '76',
-                        'height' => '76'
-                    ],
-                    [
-                        'width' => '114',
-                        'height' => '114'
-                    ],
-                    [
-                        'width' => '128',
-                        'height' => '128'
-                    ],
-                    [
-                        'width' => '144',
-                        'height' => '144'
-                    ],
-                    [
-                        'width' => '180',
-                        'height' => '180'
-                    ],
-                    [
-                        'width' => '192',
-                        'height' => '192'
-                    ],
+                    'tag' => '<link rel="apple-touch-icon-precomposed" sizes="%sx%s" href="%s">',
+                    'sizes' => [
+                        [
+                            'width' => '57',
+                            'height' => '57'
+                        ],
+                        [
+                            'width' => '76',
+                            'height' => '76'
+                        ],
+                        [
+                            'width' => '114',
+                            'height' => '114'
+                        ],
+                        [
+                            'width' => '128',
+                            'height' => '128'
+                        ],
+                        [
+                            'width' => '144',
+                            'height' => '144'
+                        ],
+                        [
+                            'width' => '180',
+                            'height' => '180'
+                        ],
+                        [
+                            'width' => '192',
+                            'height' => '192'
+                        ]
+                    ]
                 ],
                 'android' => [
-                    [
-                        'width' => '16',
-                        'height' => '16'
-                    ],
-                    [
-                        'width' => '128',
-                        'height' => '128'
-                    ],
-                    [
-                        'width' => '192',
-                        'height' => '192'
-                    ],
+                    'tag' => '<link rel="icon" type="image/png" sizes="%sx%s" href="%s">',
+                    'sizes' => [
+                        [
+                            'width' => '16',
+                            'height' => '16'
+                        ],
+                        [
+                            'width' => '128',
+                            'height' => '128'
+                        ],
+                        [
+                            'width' => '192',
+                            'height' => '192'
+                        ]
+                    ]
                 ],
                 'microsoft' => [
-                    [
-                        'width' => '70',
-                        'height' => '70'
-                    ],
-                    [
-                        'width' => '150',
-                        'height' => '150'
-                    ],
-                    [
-                        'width' => '310',
-                        'height' => '310'
-                    ],
+                    'tag' => '<meta name="msapplication-square%sx%slogo" content="%s" />',
+                    'sizes' => [
+                        [
+                            'width' => '70',
+                            'height' => '70'
+                        ],
+                        [
+                            'width' => '150',
+                            'height' => '150'
+                        ],
+                        [
+                            'width' => '310',
+                            'height' => '310'
+                        ],
+                    ]
                 ],
                 'others' => [
-                    [
-                        'width' => '160',
-                        'height' => '160'
-                    ],
-                    [
-                        'width' => '96',
-                        'height' => '96'
-                    ],
-                ],
+                    'tag' => '<link rel="icon" type="image/png" sizes="%sx%s" href="%s">',
+                    'sizes' => [
+                        [
+                            'width' => '160',
+                            'height' => '160'
+                        ],
+                        [
+                            'width' => '96',
+                            'height' => '96'
+                        ],
+                    ]
+                ]
             ];
 
-            foreach ($processingInstructions['apple'] as $key => $value) {
-                $processedImage = $imageService->applyProcessingInstructions($image, $value);
-                $imageUri = $imageService->getImageUri($processedImage);
-                $newData .= '<link rel="apple-touch-icon-precomposed" sizes="'.$value['width'].'x'.$value['height'].'" href="'.$imageUri.'">';
+            foreach ($processingInstructions as $key => $value) {
+                $tag = $value['tag'];
+                foreach ($value['sizes'] as $sizesKey => $sizesValue) {
+                    $processedImage = $imageService->applyProcessingInstructions($image, $sizesValue);
+                    $imageUri = $imageService->getImageUri($processedImage);
+                    $newData .= sprintf($tag, $sizesValue['width'], $sizesValue['height'], $imageUri);
+                }
             }
-            foreach ($processingInstructions['android'] as $key => $value) {
-                $processedImage = $imageService->applyProcessingInstructions($image, $value);
-                $imageUri = $imageService->getImageUri($processedImage);
-                $newData .= '<link rel="icon" type="image/png" sizes="'.$value['width'].'x'.$value['height'].'" href="'.$imageUri.'">';
-            }
-            foreach ($processingInstructions['microsoft'] as $key => $value) {
-                $processedImage = $imageService->applyProcessingInstructions($image, $value);
-                $imageUri = $imageService->getImageUri($processedImage);
-                $newData .= '<meta name="msapplication-square'.$value['width'].'x'.$value['height'].'logo." content="'.$imageUri.'" />';
-            }
-            foreach ($processingInstructions['others'] as $key => $value) {
-                $processedImage = $imageService->applyProcessingInstructions($image, $value);
-                $imageUri = $imageService->getImageUri($processedImage);
-                $newData .= '<link rel="icon" type="image/png" sizes="'.$value['width'].'x'.$value['height'].'" href="'.$imageUri.'">';
-            }
+
         }
 
         // <meta http-equiv="imagetoolbar" content="false">

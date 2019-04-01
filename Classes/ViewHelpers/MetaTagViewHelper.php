@@ -32,7 +32,7 @@ namespace HauerHeinrich\HhSeo\ViewHelpers;
  *  <hh:MetaTag type="title" string="my new title">
  */
 
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+// use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
@@ -40,10 +40,7 @@ class MetaTagViewHelper extends AbstractViewHelper {
 
     public function initializeArguments() {
         $this->registerArgument('order', 'int', 'Ordering int', true);
-        $this->registerArgument('type', 'string', 'def. type', false);
-        $this->registerArgument('title', 'string', 'New title string', false);
-        $this->registerArgument('description', 'string', 'New description string', false);
-
+        $this->registerArgument('merge', 'int', '', false);
         $this->registerArgument('data', 'array', 'Array', false);
     }
 
@@ -55,26 +52,15 @@ class MetaTagViewHelper extends AbstractViewHelper {
      * @return string
      */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
-        if((int)$arguments['order'] > (int)$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag']['order']) {
-            $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag']['order'] = (int)$arguments['order'];
+        if($arguments['order'] > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag']['order']) {
+            $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag']['order'] = $arguments['order'];
+            $renderChildren = $renderChildrenClosure();
 
-            if($renderChildrenClosure() !== null && empty($renderChildrenClosure()) && $renderChildrenClosure() !== '') {
-                $newHeaderData = json_decode($renderChildrenClosure(), true);
-                $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'] = array_replace_recursive($GLOBALS['TYPO3_CONF_VARS'], $newHeaderData);
+            if(empty($renderChildren)) {
+                $newHeaderData = json_decode($renderChildren, true);
+                $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'] = array_replace_recursive($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'], $newHeaderData);
             } else if(isset($arguments['data'])) {
-                $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'] = array_replace_recursive($GLOBALS['TYPO3_CONF_VARS'], $arguments['data']);
-            } else {
-                $headerChanges = [];
-
-                $headerTags = [];
-                foreach ($arguments as $key => $value) {
-                    if ($key !== 'order' && $key !== 'type') {
-                        $headerTags[$key] = $value;
-                    }
-                }
-                $headerChanges['headerData'] = $headerTags;
-
-                $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'] = array_replace_recursive($GLOBALS['TYPO3_CONF_VARS'], $headerChanges);
+                $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'] = array_replace_recursive($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'], $arguments['data']);
             }
         }
     }
