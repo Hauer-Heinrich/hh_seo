@@ -19,7 +19,7 @@ class PageDataHook {
     public function addPageData(&$parameters) {
         $headerData = $this->additionalData['headerData'];
 
-        DebuggerUtility::var_dump($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']);
+        // DebuggerUtility::var_dump($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']);
 
         $newData = '';
         if($headerData['title']) {
