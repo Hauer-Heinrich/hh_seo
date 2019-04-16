@@ -35,12 +35,12 @@ namespace HauerHeinrich\HhSeo\ViewHelpers;
 // use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
+use function GuzzleHttp\json_decode;
 
 class MetaTagViewHelper extends AbstractViewHelper {
 
     public function initializeArguments() {
         $this->registerArgument('order', 'int', 'Ordering int', true);
-        $this->registerArgument('merge', 'int', '', false);
         $this->registerArgument('data', 'array', 'Array', false);
     }
 
@@ -52,16 +52,12 @@ class MetaTagViewHelper extends AbstractViewHelper {
      * @return string
      */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
-        if($arguments['order'] > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag']['order']) {
-            $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag']['order'] = $arguments['order'];
-            $renderChildren = $renderChildrenClosure();
-
-            if(empty($renderChildren)) {
-                $newHeaderData = json_decode($renderChildren, true);
-                $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'] = array_replace_recursive($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'], $newHeaderData);
-            } else if(isset($arguments['data'])) {
-                $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'] = array_replace_recursive($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'], $arguments['data']);
-            }
+        $renderChildren = $renderChildrenClosure();
+        if(!empty(trim($renderChildren))) {
+            $newHeaderData = json_decode($renderChildren, true);
+            $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag'][$arguments['order']] = $newHeaderData;
+        } else if(isset($arguments['data'])) {
+            $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag'][$arguments['order']] = $arguments['data'];
         }
     }
 }
