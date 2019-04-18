@@ -13,3 +13,62 @@ page {
         keywords >
     }
 }
+
+################################################################
+### Plugin ###
+################################################################
+page {
+    10 {
+        dataProcessing {
+            ################################################################
+            ### Meta-Tags Images ###
+            ################################################################
+            2568 = TYPO3\CMS\Frontend\DataProcessing\FilesProcessor
+            2568 {
+                references.fieldName = og_image
+                as = og_image
+            }
+
+            2668 = TYPO3\CMS\Frontend\DataProcessing\FilesProcessor
+            2668 {
+                references.fieldName = twitter_image
+                as = twitter_image
+            }
+        }
+
+        settings {
+        }
+
+        variables {
+            languageUid = TEXT
+            languageUid {
+                data = FIELD:sys_language_uid
+            }
+
+            lastModified = TEXT
+            lastModified {
+                data = FIELD:SYS_LASTCHANGED
+            }
+
+            geoRegion = TEXT
+            geoRegion {
+                data = levelfield:-2, geo_region, slide
+            }
+
+            geoPlacename = TEXT
+            geoPlacename {
+                data = levelfield:-2, geo_placename, slide
+            }
+
+            geoPositionLong = TEXT
+            geoPositionLong {
+                data = levelfield:-2, geo_position_long, slide
+            }
+
+            geoPositionLat = TEXT
+            geoPositionLat {
+                data = levelfield:-2, geo_position_lat, slide
+            }
+        }
+    }
+}

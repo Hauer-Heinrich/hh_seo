@@ -27,9 +27,7 @@ namespace HauerHeinrich\HhSeo\ViewHelpers;
  *   xmlns:hh="http://typo3.org/ns/VENDOR/NAMESPACE/ViewHelpers"
  *   data-namespace-typo3-fluid="true">
  *
- *  <hh:MetaTag type="title">
- *  or
- *  <hh:MetaTag type="title" string="my new title">
+ *  EXAMPLE: Resources/Private/Templates/Example.html
  */
 
 // use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
@@ -42,6 +40,7 @@ class MetaTagViewHelper extends AbstractViewHelper {
     public function initializeArguments() {
         $this->registerArgument('order', 'int', 'Ordering int', true);
         $this->registerArgument('data', 'array', 'Array', false);
+        $this->registerArgument('override', 'boolean', 'Overwrites the data with lower order completely', false);
     }
 
     /**
@@ -55,6 +54,7 @@ class MetaTagViewHelper extends AbstractViewHelper {
         $renderChildren = $renderChildrenClosure();
         if(!empty(trim($renderChildren))) {
             $newHeaderData = json_decode($renderChildren, true);
+            $newHeaderData['override'] = $arguments['override'];
             $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag'][$arguments['order']] = $newHeaderData;
         } else if(isset($arguments['data'])) {
             $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag'][$arguments['order']] = $arguments['data'];

@@ -1,13 +1,29 @@
 <?php
+declare(strict_types = 1);
+
 namespace HauerHeinrich\HhSeo\Hooks;
 
 // use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use HauerHeinrich\HhSeo\Helpers\MetaTagGenerator;
 
 class PageDataHook {
+    protected $pluginSettings;
+
     protected $additionalData;
 
+    /**
+     * @var MetaTagGenerator
+     */
+    protected $metaTagGenerator;
+
     public function __construct() {
+        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\Extbase\\Object\\ObjectManager');
+        $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
+        $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+        $this->pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'];
+
         $this->additionalData = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'];
+        $this->metaTagGenerator = new MetaTagGenerator();
     }
 
     /**
@@ -16,7 +32,7 @@ class PageDataHook {
      * @param array $parameters
      * @return string
     */
-    public function addPageData(&$parameters) {
+    public function addPageData(&$parameters, &$pageData) {
         $metaTag = $this->additionalData['MetaTag'];
 
         if(!empty($metaTag)) {
@@ -26,44 +42,48 @@ class PageDataHook {
             foreach ($metaTag as $key => $value) {
                 $data = $value['headerData'];
 
-                foreach ($data as $dataKey => $dataValue) {
-                    if(!empty(trim($dataValue))) {
-                        $fullDataArray[$dataKey] = $dataValue;
+                if($value['override'] == true) {
+                    $fullDataArray = $data;
+                } else {
+                    foreach ($data as $dataKey => $dataValue) {
+                        if(!empty(trim($dataValue))) {
+                            $fullDataArray[$dataKey] = $dataValue;
+                        }
                     }
                 }
             }
 
             $newData = '';
+
             if($fullDataArray['title']) {
-                $newData .= "<title>{$fullDataArray['title']}</title>";
+                $newData .= $this->metaTagGenerator->getTitleTag(
+                    $fullDataArray['title'],
+                    $fullDataArray['titleBefore'],
+                    $fullDataArray['titleAfter'],
+                    $fullDataArray['titleSeparate'],
+                    $fullDataArray['titleSeparateBefore'],
+                    $fullDataArray['titleSeparateAfter']
+                );
             }
 
             if($fullDataArray['description']) {
-                $newData .= "<meta name='description' content='{$fullDataArray['description']}'>";
+                $newData .= $this->metaTagGenerator->getNameMetaTag("description", $fullDataArray['description']);
             }
 
             if($fullDataArray['og:title']) {
-                $newData .= "<meta property='og:title' content='{$fullDataArray['og:title']}'>";
-            } else if($fullDataArray['title']) {
-                $newData .= "<meta property='og:title' content='{$fullDataArray['title']}'>";
+                $newData .= $this->metaTagGenerator->getPropertyMetaTag("og:title", $fullDataArray['og:title']);
             }
 
             if($fullDataArray['og:description']) {
-                $newData .= "<meta property='og:description' content='{$fullDataArray['og:description']}'>";
-            } else if($fullDataArray['description']) {
-                $newData .= "<meta property='og:description' content='{$fullDataArray['description']}'>";
+                $newData .= $this->metaTagGenerator->getPropertyMetaTag("og:description", $fullDataArray['og:description']);
             }
 
             if($fullDataArray['twitter:title']) {
-                $newData .= "<meta property='twitter:title' content='{$fullDataArray['twitter:title']}'>";
-            } else if($fullDataArray['title']) {
-                $newData .= "<meta property='twitter:title' content='{$fullDataArray['title']}'>";
+                $newData .= $this->metaTagGenerator->getPropertyMetaTag("twitter:title", $fullDataArray['twitter:title']);
             }
 
             if($fullDataArray['twitter:description']) {
-                $newData .= "<meta property='twitter:description' content='{$fullDataArray['twitter:description']}'>";
-            } else if($fullDataArray['description']) {
-                $newData .= "<meta property='twitter:description' content='{$fullDataArray['description']}'>";
+                $newData .= $this->metaTagGenerator->getPropertyMetaTag("twitter:description", $fullDataArray['twitter:description']);
             }
 
             if ($fullDataArray['touchIcon']) {
@@ -171,20 +191,53 @@ class PageDataHook {
             }
 
             if ($fullDataArray['format-detection'] === "false") {
-                $newData .= "<meta name='format-detection' content='telephone=no'>";
+                $newData .= $this->metaTagGenerator->getNameMetaTag('format-detection', 'telephone=no');
             } else if ($fullDataArray['format-detection'] === "true") {
-                $newData .= "<meta name='format-detection' content='telephone=yes'>";
+                $newData .= $this->metaTagGenerator->getNameMetaTag('format-detection', 'telephone=yes');
             }
 
             if ($fullDataArray['theme-color']) {
-                $newData .= "<meta name='theme-color' content='{$fullDataArray['theme-color']}'>";
-                $newData .= "<meta name='msapplication-TileColor' content='{$fullDataArray['theme-color']}'>";
+                $newData .= $this->metaTagGenerator->getNameMetaTag('theme-color', $fullDataArray['theme-color']);
+                $newData .= $this->metaTagGenerator->getNameMetaTag('msapplication-TileColor', $fullDataArray['theme-color']);
             }
 
             if ($fullDataArray['last-modified']) {
                 $date = gmdate('D, d M Y H:i:s \G\M\T', intval($fullDataArray['last-modified']));
-                $newData .= "<meta name='Last-Modified' content='{$date}' />";
+                $newData .= $this->metaTagGenerator->getNameMetaTag('Last-Modified', $date);
             }
+
+            // geo data - position
+            if($fullDataArray['geo:region']) {
+                $newData .= $this->metaTagGenerator->getNameMetaTag("geo:region", $fullDataArray['geo:region']);
+            }
+
+            if($fullDataArray['geo:placename']) {
+                $newData .= $this->metaTagGenerator->getNameMetaTag("geo:placename", $fullDataArray['geo:placename']);
+            }
+
+            if($fullDataArray['geo:position:long'] && $fullDataArray['geo:position:lat']) {
+                $pos = $fullDataArray['geo:position:long'] . ";" . $fullDataArray['geo:position:lat'];
+                $icbm = $fullDataArray['geo:position:long'] . ", " . $fullDataArray['geo:position:lat'];
+                $newData .= $this->metaTagGenerator->getNameMetaTag("geo:position", $pos);
+                $newData .= $this->metaTagGenerator->getNameMetaTag("ICBM", $icbm);
+            }
+
+            // Robots
+            if($fullDataArray['robots:index'] || $fullDataArray['robots:follow']) {
+                $content = $fullDataArray['robots:index'];
+                if (trim($content) != "" && $fullDataArray['robots:follow']) {
+                    $content .= ',';
+                }
+                $content .= $fullDataArray['robots:follow'];
+                $newData .= $this->metaTagGenerator->getNameMetaTag("robots", $content);
+            }
+
+            // Author
+            if($fullDataArray['author']) {
+                $newData .= $this->metaTagGenerator->getNameMetaTag("author", $fullDataArray['author']);
+            }
+
+            // <meta name="copyright"content="company name">
 
             $parameters["headerData"][2] = $newData;
         }
