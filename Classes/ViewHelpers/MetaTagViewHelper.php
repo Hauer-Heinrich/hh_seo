@@ -40,6 +40,7 @@ class MetaTagViewHelper extends AbstractViewHelper {
     public function initializeArguments() {
         $this->registerArguments([
             ['order', 'int', 'Ordering int', true],
+            ['type', 'string', 'headerData or custom Data Type', false, 'headerData'],
             ['title', 'string', 'Title-Tag'],
             ['titleBefore', 'string', 'Title before string'],
             ['titleAfter', 'string', 'Title after string'],
@@ -90,19 +91,16 @@ class MetaTagViewHelper extends AbstractViewHelper {
      * @return string
      */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
-        $dataArray = [
-            'headerData' => $arguments
-        ];
-        $newHeaderData = [];
-        $headerData = [];
-
+        $dataType = $arguments["type"];
+        $dataArray[$dataType] = $arguments;
+        $childData = [];
         $renderChildren = $renderChildrenClosure();
+
         if(!empty(trim($renderChildren))) {
-            $newHeaderData = json_decode($renderChildren, true);
-            $headerData = $newHeaderData[0];
-            $headerData['override'] = $arguments['override'];
+            $childData[$dataType] = reset(json_decode($renderChildren, true));
+            $childData['override'] = $arguments['override'];
         }
 
-        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag'][$arguments['order']] = array_replace_recursive($dataArray, $headerData);
+        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag'][$arguments['order']] = array_replace_recursive($dataArray, $childData);
     }
 }
