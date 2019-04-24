@@ -27,7 +27,7 @@ class PageDataHook {
     }
 
     /**
-     * My example function
+     * addPageData
      *
      * @param array $parameters
      * @return string
@@ -46,7 +46,14 @@ class PageDataHook {
                     $fullDataArray = $data;
                 } else {
                     foreach ($data as $dataKey => $dataValue) {
-                        if(!empty(trim($dataValue))) {
+                        if (is_array($dataValue)) {
+                            $errors = array_filter($dataValue);
+                            if (!empty($errors)) {
+                                $fullDataArray[$dataKey] = $dataValue;
+                            }
+                        } else if(is_string($dataValue) && !empty(trim($dataValue))) {
+                            $fullDataArray[$dataKey] = $dataValue;
+                        } else if(!empty($dataValue)){
                             $fullDataArray[$dataKey] = $dataValue;
                         }
                     }
@@ -183,7 +190,6 @@ class PageDataHook {
                         $newData .= sprintf($tag, $sizesValue['width'], $sizesValue['height'], $imageUri);
                     }
                 }
-
             }
 
             if ($fullDataArray['imagetoolbar']) {
@@ -237,7 +243,9 @@ class PageDataHook {
                 $newData .= $this->metaTagGenerator->getNameMetaTag("author", $fullDataArray['author']);
             }
 
-            // <meta name="copyright"content="company name">
+            if($fullDataArray['copyright']) {
+                $newData .= $this->metaTagGenerator->getNameMetaTag("copyright", $fullDataArray['copyright']);
+            }
 
             $parameters["headerData"][2] = $newData;
         }

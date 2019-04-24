@@ -30,7 +30,7 @@ namespace HauerHeinrich\HhSeo\ViewHelpers;
  *  EXAMPLE: Resources/Private/Templates/Example.html
  */
 
-// use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use function GuzzleHttp\json_decode;
@@ -96,6 +96,6 @@ class MetaTagViewHelper extends AbstractViewHelper {
             $headerData['override'] = $arguments['override'];
         }
 
-        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag'][$arguments['order']] = array_replace_recursive($dataArray, $headerData);
+        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag'][$arguments['order']] = array_replace_recursive($headerData, $dataArray);
     }
 }
