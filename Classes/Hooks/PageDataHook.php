@@ -46,6 +46,7 @@ class PageDataHook {
                     $fullDataArray = $data;
                 } else {
                     foreach ($data as $dataKey => $dataValue) {
+<<<<<<< HEAD
                         if (is_array($dataValue)) {
                             $errors = array_filter($dataValue);
                             if (!empty($errors)) {
@@ -54,6 +55,9 @@ class PageDataHook {
                         } else if(is_string($dataValue) && !empty(trim($dataValue))) {
                             $fullDataArray[$dataKey] = $dataValue;
                         } else if(!empty($dataValue)){
+=======
+                        if(is_string($dataValue) && !empty(trim($dataValue))) {
+>>>>>>> d7df1f3b306313b0ca8880e51392fa1c22fa44f2
                             $fullDataArray[$dataKey] = $dataValue;
                         }
                     }
