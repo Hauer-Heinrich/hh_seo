@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace HauerHeinrich\HhSeo\Hooks;
 
 // use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use HauerHeinrich\HhSeo\Helpers\MetaTagGenerator;
 
 class PageDataHook {
@@ -17,7 +18,7 @@ class PageDataHook {
     protected $metaTagGenerator;
 
     public function __construct() {
-        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\Extbase\\Object\\ObjectManager');
+        $objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\Extbase\\Object\\ObjectManager');
         $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
         $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
         $this->pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'];
@@ -34,6 +35,8 @@ class PageDataHook {
     */
     public function addPageData(&$parameters) {
         $metaTag = $this->additionalData['MetaTag'];
+
+        $imageService = GeneralUtility::makeInstance("TYPO3\\CMS\\Extbase\\Service\\ImageService");
 
         if(!empty($metaTag)) {
             ksort($metaTag);
@@ -93,8 +96,13 @@ class PageDataHook {
                 $newData .= $this->metaTagGenerator->getPropertyMetaTag("twitter:description", $fullDataArray['twitter:description']);
             }
 
+            if($fullDataArray['shortcutIcon']) {
+                $image = $imageService->getImage($fullDataArray['shortcutIcon'], null, false);
+                $imageUri = $imageService->getImageUri($image);
+                $newData .= "<link rel='shortcut icon' href='{$imageUri}'>";
+            }
+
             if ($fullDataArray['touchIcon']) {
-                $imageService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance("TYPO3\\CMS\\Extbase\\Service\\ImageService");
                 $image = $imageService->getImage($fullDataArray['touchIcon'], null, false);
 
                 // you have to set these variables or remove if you don't need them
@@ -181,6 +189,11 @@ class PageDataHook {
                         ]
                     ]
                 ];
+                if (empty($fullDataArray['shortcutIcon'])) {
+                    $processingInstructions['favicon'] = [
+                        'tag' => '<link rel="shortcut icon" href="%s">'
+                    ];
+                }
 
                 foreach ($processingInstructions as $key => $value) {
                     $tag = $value['tag'];
