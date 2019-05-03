@@ -97,7 +97,8 @@ class MetaTagViewHelper extends AbstractViewHelper {
         $renderChildren = $renderChildrenClosure();
 
         if(!empty(trim($renderChildren))) {
-            $childData[$dataType] = reset(json_decode($renderChildren, true));
+            $data = preg_replace("%(\r\n)|(\r)%", "", $renderChildren);
+            $childData[$dataType] = reset(json_decode(strip_tags($data), true));
             $childData['override'] = $arguments['override'];
         }
 

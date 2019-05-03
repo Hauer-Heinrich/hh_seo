@@ -55,7 +55,7 @@ class PageDataHook {
                                 $fullDataArray[$dataKey] = $dataValue;
                             }
                         } else if(is_string($dataValue) && !empty(trim($dataValue))) {
-                            $fullDataArray[$dataKey] = $dataValue;
+                            $fullDataArray[$dataKey] = strip_tags($dataValue);
                         } else if(!empty($dataValue)) {
                             $fullDataArray[$dataKey] = $dataValue;
                         }
