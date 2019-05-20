@@ -11,8 +11,8 @@
  ***************************************************************/
 
 $EM_CONF['hh_seo'] = [
-    'title' => 'Hauer-Heinrich SEO - Meta-Tag - ViewHelpers',
-    'description' => '',
+    'title' => 'Hauer-Heinrich - SEO - Meta-Tag - ViewHelpers',
+    'description' => 'Hauer-Heinrich - SEO - Meta-Tag - ViewHelpers',
     'category' => 'distribution',
     'author' => 'Christian Hackl',
     'author_email' => 'chackl@hauer-heinrich.de',
