@@ -1,0 +1,13 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:hhs="http://typo3.org/ns/HauerHeinrich/HhSeo/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+
+<hhs:metaTag order="0"
+    title="{data.title}"
+    description="{data.description}"
+    theme-color="#000"
+    og-image="<f:if condition='{og_image.0}'>{f:uri.image(src: '{og_image.0}'', treatIdAsReference: 1)}</f:if>"
+>
+</hhs:metaTag>
+
+</html>

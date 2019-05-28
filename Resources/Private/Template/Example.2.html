@@ -1,0 +1,24 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:hhs="http://typo3.org/ns/HauerHeinrich/HhSeo/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+
+<f:comment>
+    For example use this in your own extension.
+    @override = Overwrites the data with lower order completely
+</f:comment>
+
+<hhs:metaTag order="10" override="true">
+[{
+    <f:comment></f:comment>
+    <f:if condition="{myExtData.myExtValue_seoDescription}">
+        <f:then>
+            "description": "<f:format.crop maxCharacters="180" respectWordBoundaries="1" respectHtml="0">{myExtData.myExtValue_seoDescription}</f:format.crop>",
+        </f:then>
+        <f:else>
+            "description": "<f:format.crop maxCharacters="180" respectWordBoundaries="1" respectHtml="0">{data.description}</f:format.crop>",
+        </f:else>
+    </f:if>
+}]
+</hhs:metaTag>
+
+</html>
