@@ -73,6 +73,7 @@ class MetaTagViewHelper extends AbstractViewHelper {
             ['geo-placename', 'string', 'City name'],
             ['geo-position:long', 'double', 'longitude'],
             ['geo-position:lat', 'double', 'latitude'],
+            ['canonical', 'string', 'Canonical Path e.g. https://www.domain.tld/custom-link', false],
             ['override', 'boolean', 'Overwrites the data with lower order completely', false]
         ]);
     }

@@ -5,17 +5,14 @@ namespace HauerHeinrich\HhSeo\Hooks;
 
 // use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
-use HauerHeinrich\HhSeo\Helpers\MetaTagGenerator;
+use PedroBorges\MetaTags\MetaTags;
+use HauerHeinrich\HhSeo\Helpers\CanonicalGenerator;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 class PageDataHook {
     protected $pluginSettings;
 
     protected $additionalData;
-
-    /**
-     * @var MetaTagGenerator
-     */
-    protected $metaTagGenerator;
 
     public function __construct() {
         $objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\Extbase\\Object\\ObjectManager');
@@ -24,7 +21,6 @@ class PageDataHook {
         $this->pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'];
 
         $this->additionalData = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'];
-        $this->metaTagGenerator = new MetaTagGenerator();
     }
 
     /**
@@ -65,8 +61,10 @@ class PageDataHook {
 
             $newData = '';
 
+            $tags = new MetaTags;
+
             if($fullDataArray['title']) {
-                $newData .= $this->metaTagGenerator->getTitleTag(
+                $tags->title(
                     $fullDataArray['title'],
                     $fullDataArray['titleBefore'],
                     $fullDataArray['titleAfter'],
@@ -77,29 +75,29 @@ class PageDataHook {
             }
 
             if($fullDataArray['description']) {
-                $newData .= $this->metaTagGenerator->getNameMetaTag("description", $fullDataArray['description']);
+                $tags->meta('description', $fullDataArray['description']);
             }
 
             if($fullDataArray['og:title']) {
-                $newData .= $this->metaTagGenerator->getPropertyMetaTag("og:title", $fullDataArray['og:title']);
+                $tags->og("title", $fullDataArray['og:title']);
             }
 
             if($fullDataArray['og:description']) {
-                $newData .= $this->metaTagGenerator->getPropertyMetaTag("og:description", $fullDataArray['og:description']);
+                $tags->og("description", $fullDataArray['og:description']);
             }
 
             if($fullDataArray['twitter:title']) {
-                $newData .= $this->metaTagGenerator->getPropertyMetaTag("twitter:title", $fullDataArray['twitter:title']);
+                $tags->twitter("title", $fullDataArray['twitter:title']);
             }
 
             if($fullDataArray['twitter:description']) {
-                $newData .= $this->metaTagGenerator->getPropertyMetaTag("twitter:description", $fullDataArray['twitter:description']);
+                $tags->twitter("description", $fullDataArray['twitter:description']);
             }
 
             if($fullDataArray['shortcutIcon']) {
                 $image = $imageService->getImage($fullDataArray['shortcutIcon'], null, false);
                 $imageUri = $imageService->getImageUri($image);
-                $newData .= "<link rel='shortcut icon' href='{$imageUri}'>";
+                $tags->link('shortcut icon', $imageUri);
             }
 
             if ($fullDataArray['touchIcon']) {
@@ -210,35 +208,35 @@ class PageDataHook {
             }
 
             if ($fullDataArray['format-detection'] === "false") {
-                $newData .= $this->metaTagGenerator->getNameMetaTag('format-detection', 'telephone=no');
+                $tags->meta('format-detection', 'telephone=no');
             } else if ($fullDataArray['format-detection'] === "true") {
-                $newData .= $this->metaTagGenerator->getNameMetaTag('format-detection', 'telephone=yes');
+                $tags->meta('format-detection', 'telephone=yes');
             }
 
             if ($fullDataArray['theme-color']) {
-                $newData .= $this->metaTagGenerator->getNameMetaTag('theme-color', $fullDataArray['theme-color']);
-                $newData .= $this->metaTagGenerator->getNameMetaTag('msapplication-TileColor', $fullDataArray['theme-color']);
+                $tags->meta('theme-color', $fullDataArray['theme-color']);
+                $tags->meta('msapplication-TileColor', $fullDataArray['theme-color']);
             }
 
             if ($fullDataArray['last-modified']) {
                 $date = gmdate('D, d M Y H:i:s \G\M\T', intval($fullDataArray['last-modified']));
-                $newData .= $this->metaTagGenerator->getNameMetaTag('Last-Modified', $date);
+                $tags->meta('Last-Modified', $date);
             }
 
             // geo data - position
             if($fullDataArray['geo:region']) {
-                $newData .= $this->metaTagGenerator->getNameMetaTag("geo:region", $fullDataArray['geo:region']);
+                $tags->meta("geo:region", $fullDataArray['geo:region']);
             }
 
             if($fullDataArray['geo:placename']) {
-                $newData .= $this->metaTagGenerator->getNameMetaTag("geo:placename", $fullDataArray['geo:placename']);
+                $tags->meta("geo:placename", $fullDataArray['geo:placename']);
             }
 
             if($fullDataArray['geo:position:long'] && $fullDataArray['geo:position:lat']) {
                 $pos = $fullDataArray['geo:position:long'] . ";" . $fullDataArray['geo:position:lat'];
                 $icbm = $fullDataArray['geo:position:long'] . ", " . $fullDataArray['geo:position:lat'];
-                $newData .= $this->metaTagGenerator->getNameMetaTag("geo:position", $pos);
-                $newData .= $this->metaTagGenerator->getNameMetaTag("ICBM", $icbm);
+                $tags->meta("geo:position", $pos);
+                $tags->meta("ICBM", $icbm);
             }
 
             // Robots
@@ -248,19 +246,29 @@ class PageDataHook {
                     $content .= ',';
                 }
                 $content .= $fullDataArray['robots:follow'];
-                $newData .= $this->metaTagGenerator->getNameMetaTag("robots", $content);
+                $tags->meta("robots", $content);
             }
 
             // Author
             if($fullDataArray['author']) {
-                $newData .= $this->metaTagGenerator->getNameMetaTag("author", $fullDataArray['author']);
+                $tags->meta("author", $fullDataArray['author']);
             }
 
             if($fullDataArray['copyright']) {
-                $newData .= $this->metaTagGenerator->getNameMetaTag("copyright", $fullDataArray['copyright']);
+                $tags->meta("copyright", $fullDataArray['copyright']);
             }
 
-            $parameters["headerData"][2] = $newData;
+            // set canonical path-string if set, for slot
+            $canonicalGenerator = GeneralUtility::makeInstance(CanonicalGenerator::class);
+            if(!empty($fullDataArray['canonical'])) {
+                $newData .= $canonicalGenerator->generate($fullDataArray['canonical']);
+            } else {
+                $newData .= $canonicalGenerator->generate();
+            }
+
+            // output to HTML
+            $result = $tags->render() . $newData;
+            $parameters["headerData"][2] = $result;
         }
     }
 }

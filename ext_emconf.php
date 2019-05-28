@@ -34,7 +34,8 @@ $EM_CONF['hh_seo'] = [
     ],
     'autoload' => [
         'psr-4' => [
-            'HauerHeinrich\\HhSeo\\' => 'Classes'
+            'HauerHeinrich\\HhSeo\\' => 'Classes',
+            'PedroBorges\\MetaTags\\' => 'meta-tags/src'
         ],
     ],
 ];
