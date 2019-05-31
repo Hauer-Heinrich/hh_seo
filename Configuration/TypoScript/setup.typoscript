@@ -22,9 +22,28 @@ page {
 ################################################################
 ### Plugin ###
 ################################################################
+plugin.tx_hhseo {
+    shortcutIcon = {$plugin.tx_hhseo.icons.shortcutIcon}
+    touchIcon = {$plugin.tx_hhseo.icons.touchIcon}
+    titleBefore = {$plugin.tx_hhseo.title.beforeMetaTitle}
+    titleAfter = {$plugin.tx_hhseo.title.afterMetaTitle}
+    titleSeparate = {$plugin.tx_hhseo.title.titleSeparate}
+    titleSeparateBefore = {$plugin.tx_hhseo.title.titleSeparateBefore}
+    titleSeparateAfter = {$plugin.tx_hhseo.title.titleSeparateAfter}
+    themeColor = {$plugin.tx_hhseo.basic.themeColor}
+    author = {$plugin.tx_hhseo.basic.author}
+    formatDetection = {$plugin.tx_hhseo.basic.formatDetection}
+    designer = {$plugin.tx_hhseo.basic.designer}
+}
+
 page {
     10 {
         dataProcessing {
+            2468 = HauerHeinrich\HhSeo\DataProcessing\ConstantsProcessor
+            2468 {
+                as = hhSeo
+            }
+
             ################################################################
             ### Meta-Tags Images ###
             ################################################################
@@ -41,37 +60,29 @@ page {
             }
         }
 
-        settings {
-        }
-
         variables {
-            languageUid = TEXT
-            languageUid {
-                data = FIELD:sys_language_uid
-            }
-
-            lastModified = TEXT
-            lastModified {
-                data = FIELD:SYS_LASTCHANGED
-            }
-
-            geoRegion = TEXT
-            geoRegion {
+            hhSeo_slide_geoRegion = TEXT
+            hhSeo_slide_geoRegion {
                 data = levelfield:-2, geo_region, slide
             }
 
-            geoPlacename = TEXT
-            geoPlacename {
+            hhSeo_slide_geoRegion = TEXT
+            hhSeo_slide_geoRegion {
+                data = levelfield:-2, geo_region, slide
+            }
+
+            hhSeo_slide_geoPlacename = TEXT
+            hhSeo_slide_geoPlacename {
                 data = levelfield:-2, geo_placename, slide
             }
 
-            geoPositionLong = TEXT
-            geoPositionLong {
+            hhSeo_slide_geoPositionLong = TEXT
+            hhSeo_slide_geoPositionLong {
                 data = levelfield:-2, geo_position_long, slide
             }
 
-            geoPositionLat = TEXT
-            geoPositionLat {
+            hhSeo_slide_geoPositionLat = TEXT
+            hhSeo_slide_geoPositionLat {
                 data = levelfield:-2, geo_position_lat, slide
             }
         }

@@ -1,0 +1,51 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:hhs="http://typo3.org/ns/HauerHeinrich/HhSeo/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+
+<hhs:metaTag order="0">
+    [{
+        <f:comment></f:comment>
+        "title": "{data.title}",
+        "titleBefore": "{hhSeo.titleBefore}",
+        "titleAfter": "{hhSeo.titleAfter}",
+        "titleSeparate": "{hhSeo.titleSeparate}",
+        "titleSeparateBefore": "{hhSeo.titleSeparateBefore}",
+        "titleSeparateAfter": "{hhSeo.titleSeparateAfter}",
+
+        "description": "{data.description}",
+
+        "designer": "{hhSeo.designer}",
+        "theme-color": "{hhSeo.themeColor }",
+        "shortcutIcon": "{hhSeo.shortcutIcon}",
+        "touchIcon": "{hhSeo.touchIcon}",
+        "format-detection": "{hhSeo.formatDetection}",
+        "last-modified": "{data.SYS_LASTCHANGED}",
+
+        "author": "{hhSeo.author}",
+
+        "robots:index": "{f:if(condition: '{data.no_index}', then: 'noindex')}",
+        "robots:follow": "{f:if(condition: '{data.no_follow}', then: 'nofollow')}",
+
+        "og:title": "{data.og_title}",
+        "og:description": "{data.og_description}",
+        "og:image": "<f:if condition="{og_image.0}">{f:uri.image(src: '{og_image.0.uid}', treatIdAsReference: 1)}</f:if>",
+
+        "twitter:title": "{data.twitter_title}",
+        "twitter:description": "{data.twitter_description}",
+        "twitter:image": "<f:if condition="{twitter_image.0}">{f:uri.image(src: '{twitter_image.0.uid}', treatIdAsReference: 1)}</f:if>",
+
+        "geo:region": "{hhSeo_slide_geoRegion}",
+        "geo:placename": "{hhSeo_slide_geoPlacename}",
+        "geo:position:long": "{hhSeo_slide_geoPositionLong}",
+        "geo:position:lat": "{hhSeo_slide_geoPositionLat}",
+
+        "canonical": "{data.canonical_link}",
+
+        "custom": {
+            "myCustomKey": "meta content='myCustomMetaTag'",
+            "otherCustomKey": "meta http-equiv='Content-Type' content='...;' charset='...' /"
+        }
+    }]
+</hhs:metaTag>
+
+</html>

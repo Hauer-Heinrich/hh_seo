@@ -45,14 +45,13 @@ class MetaTagViewHelper extends AbstractViewHelper {
             ['titleBefore', 'string', 'Title before string'],
             ['titleAfter', 'string', 'Title after string'],
             ['titleSeparate', 'string', 'Title seperator'],
-            ['titleSeparateBefore', 'string', 'Title seperator before (overrides titleSeparate)'],
-            ['titleSeparateAfter', 'string', 'Title seperator after (overrides titleSeparate)'],
+            ['titleSeparateBefore', 'string', 'Title seperator before (overwrite titleSeparate)'],
+            ['titleSeparateAfter', 'string', 'Title seperator after (overwrite titleSeparate)'],
             ['description', 'string', 'Description-Tag'],
 
             ['designer', 'string', 'Designer'],
             ['theme-color', 'string', 'theme-color'],
             ['touchIcon', 'string', 'touch icon - output for devers gadgets, shouldbe 310x310px'],
-            ['imagetoolbar', 'boolean', 'Imagetoolbar - boolean'],
             ['format-detection', 'boolean', 'Autoformat phonenumbers - on various gadgets'],
             ['last-modified', 'int', 'last-modified as timestamp'],
             ['author', 'string', 'Author'],
@@ -74,7 +73,7 @@ class MetaTagViewHelper extends AbstractViewHelper {
             ['geo-position:long', 'double', 'longitude'],
             ['geo-position:lat', 'double', 'latitude'],
             ['canonical', 'string', 'Canonical Path e.g. https://www.domain.tld/custom-link', false],
-            ['override', 'boolean', 'Overwrites the data with lower order completely', false]
+            ['overwrite', 'boolean', 'Overwrites the data with lower order completely', false]
         ]);
     }
 
@@ -101,7 +100,7 @@ class MetaTagViewHelper extends AbstractViewHelper {
             $preg = "\\x00-\\x20"; // for control characters and whitespaces and so on
             $data = strip_tags(trim(preg_replace( "/[".$preg."]+/" , ' ' , $renderChildren ) , $preg));
             $childData[$dataType] = reset(json_decode($data, true));
-            $childData['override'] = $arguments['override'];
+            $childData['overwrite'] = $arguments['overwrite'];
         }
 
         $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag'][$arguments['order']] = array_replace_recursive($dataArray, $childData);

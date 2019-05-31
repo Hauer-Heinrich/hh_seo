@@ -25,7 +25,7 @@
 *.DS_Store
 .DS_Store
 .AppleDouble
-.LSOverride
+.LSoverwrite
 
 ### other ###
 /install.php

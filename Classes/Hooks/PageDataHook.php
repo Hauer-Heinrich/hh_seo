@@ -3,24 +3,49 @@ declare(strict_types = 1);
 
 namespace HauerHeinrich\HhSeo\Hooks;
 
-// use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use PedroBorges\MetaTags\MetaTags;
 use HauerHeinrich\HhSeo\Helpers\CanonicalGenerator;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 class PageDataHook {
+
+    /**
+     * pluginSettings
+     * @var array
+     */
     protected $pluginSettings;
 
+
+    /**
+     * additionalData
+     * @var array
+     */
     protected $additionalData;
+
+    /**
+     * url
+     * @var string
+     */
+    protected $url;
+
+
+    /**
+     * imageService
+     * @var TYPO3\\CMS\\Extbase\\Service\\ImageService
+     */
+    protected $imageService;
 
     public function __construct() {
         $objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\Extbase\\Object\\ObjectManager');
         $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
         $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-        $this->pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'];
 
+        $this->pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'];
         $this->additionalData = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'];
+        $this->imageService = GeneralUtility::makeInstance("TYPO3\\CMS\\Extbase\\Service\\ImageService");
+        $request = $GLOBALS['TYPO3_REQUEST'];
+        $this->url = $request->getUri()->getScheme() . "://" . $request->getUri()->getHost();
     }
 
     /**
@@ -32,28 +57,26 @@ class PageDataHook {
     public function addPageData(&$parameters) {
         $metaTag = $this->additionalData['MetaTag'];
 
-        $imageService = GeneralUtility::makeInstance("TYPO3\\CMS\\Extbase\\Service\\ImageService");
-
         if(!empty($metaTag)) {
             ksort($metaTag);
 
-            $fullDataArray = [];
+            $fluidData = [];
             foreach ($metaTag as $key => $value) {
                 $data = $value['headerData'];
 
-                if($value['override'] == true) {
-                    $fullDataArray = $data;
+                if($value['overwrite'] == true) {
+                    $fluidData = $data;
                 } else {
                     foreach ($data as $dataKey => $dataValue) {
                         if (is_array($dataValue)) {
                             $errors = array_filter($dataValue);
                             if (!empty($errors)) {
-                                $fullDataArray[$dataKey] = $dataValue;
+                                $fluidData[$dataKey] = $dataValue;
                             }
                         } else if(is_string($dataValue) && !empty(trim($dataValue))) {
-                            $fullDataArray[$dataKey] = strip_tags($dataValue);
+                            $fluidData[$dataKey] = strip_tags($dataValue);
                         } else if(!empty($dataValue)) {
-                            $fullDataArray[$dataKey] = $dataValue;
+                            $fluidData[$dataKey] = $dataValue;
                         }
                     }
                 }
@@ -63,205 +86,117 @@ class PageDataHook {
 
             $tags = new MetaTags;
 
-            if($fullDataArray['title']) {
+            if($fluidData['title']) {
                 $tags->title(
-                    $fullDataArray['title'],
-                    $fullDataArray['titleBefore'],
-                    $fullDataArray['titleAfter'],
-                    $fullDataArray['titleSeparate'],
-                    $fullDataArray['titleSeparateBefore'],
-                    $fullDataArray['titleSeparateAfter']
+                    $fluidData['title'],
+                    $fluidData['titleBefore'],
+                    $fluidData['titleAfter'],
+                    $fluidData['titleSeparate'],
+                    $fluidData['titleSeparateBefore'],
+                    $fluidData['titleSeparateAfter']
                 );
             }
 
-            if($fullDataArray['description']) {
-                $tags->meta('description', $fullDataArray['description']);
+            if($fluidData['description']) {
+                $tags->meta('description', $fluidData['description']);
             }
 
-            if($fullDataArray['og:title']) {
-                $tags->og("title", $fullDataArray['og:title']);
+            if($fluidData['og:title']) {
+                $tags->og("title", $fluidData['og:title']);
             }
 
-            if($fullDataArray['og:description']) {
-                $tags->og("description", $fullDataArray['og:description']);
+            if($fluidData['og:description']) {
+                $tags->og("description", $fluidData['og:description']);
             }
 
-            if($fullDataArray['twitter:title']) {
-                $tags->twitter("title", $fullDataArray['twitter:title']);
+            if($fluidData['og:image']) {
+                if(is_array($fluidData['og:image'])) {
+                    foreach ($fluidData['og:image'] as $key => $value) {
+                        $tags->og('image', $this->url . "/". $value);
+                    }
+                } else {
+                    $tags->og('image', $this->url . "/". $fluidData['og:image']);
+                }
             }
 
-            if($fullDataArray['twitter:description']) {
-                $tags->twitter("description", $fullDataArray['twitter:description']);
+            if($fluidData['twitter:title']) {
+                $tags->twitter("title", $fluidData['twitter:title']);
             }
 
-            if($fullDataArray['shortcutIcon']) {
-                $image = $imageService->getImage($fullDataArray['shortcutIcon'], null, false);
-                $imageUri = $imageService->getImageUri($image);
+            if($fluidData['twitter:description']) {
+                $tags->twitter("description", $fluidData['twitter:description']);
+            }
+
+            if($fluidData['shortcutIcon']) {
+                $image = $this->imageService->getImage($fluidData['shortcutIcon'], null, false);
+                $imageUri = $this->imageService->getImageUri($image);
                 $tags->link('shortcut icon', $imageUri);
             }
 
-            if ($fullDataArray['touchIcon']) {
-                $image = $imageService->getImage($fullDataArray['touchIcon'], null, false);
-
-                // you have to set these variables or remove if you don't need them
-                $processingInstructions = [
-                    // Apple
-                    'apple' => [
-                        'tag' => '<link rel="apple-touch-icon-precomposed" sizes="%sx%s" href="%s">',
-                        'sizes' => [
-                            [
-                                'width' => '57',
-                                'height' => '57'
-                            ],
-                            [
-                                'width' => '76',
-                                'height' => '76'
-                            ],
-                            [
-                                'width' => '114',
-                                'height' => '114'
-                            ],
-                            [
-                                'width' => '128',
-                                'height' => '128'
-                            ],
-                            [
-                                'width' => '144',
-                                'height' => '144'
-                            ],
-                            [
-                                'width' => '180',
-                                'height' => '180'
-                            ],
-                            [
-                                'width' => '192',
-                                'height' => '192'
-                            ]
-                        ]
-                    ],
-                    'android' => [
-                        'tag' => '<link rel="icon" type="image/png" sizes="%sx%s" href="%s">',
-                        'sizes' => [
-                            [
-                                'width' => '16',
-                                'height' => '16'
-                            ],
-                            [
-                                'width' => '128',
-                                'height' => '128'
-                            ],
-                            [
-                                'width' => '192',
-                                'height' => '192'
-                            ]
-                        ]
-                    ],
-                    'microsoft' => [
-                        'tag' => '<meta name="msapplication-square%sx%slogo" content="%s" />',
-                        'sizes' => [
-                            [
-                                'width' => '70',
-                                'height' => '70'
-                            ],
-                            [
-                                'width' => '150',
-                                'height' => '150'
-                            ],
-                            [
-                                'width' => '310',
-                                'height' => '310'
-                            ],
-                        ]
-                    ],
-                    'others' => [
-                        'tag' => '<link rel="icon" type="image/png" sizes="%sx%s" href="%s">',
-                        'sizes' => [
-                            [
-                                'width' => '160',
-                                'height' => '160'
-                            ],
-                            [
-                                'width' => '96',
-                                'height' => '96'
-                            ],
-                        ]
-                    ]
-                ];
-                if (empty($fullDataArray['shortcutIcon'])) {
-                    $processingInstructions['favicon'] = [
-                        'tag' => '<link rel="shortcut icon" href="%s">'
-                    ];
-                }
-
-                foreach ($processingInstructions as $key => $value) {
-                    $tag = $value['tag'];
-                    foreach ($value['sizes'] as $sizesKey => $sizesValue) {
-                        $processedImage = $imageService->applyProcessingInstructions($image, $sizesValue);
-                        $imageUri = $imageService->getImageUri($processedImage);
-                        $newData .= sprintf($tag, $sizesValue['width'], $sizesValue['height'], $imageUri);
-                    }
-                }
+            if ($fluidData['touchIcon']) {
+                $newData .= $this->setTouchIcons($fluidData['touchIcon']);
             }
 
-            if ($fullDataArray['imagetoolbar']) {
-                $newData .= "<meta http-equiv='imagetoolbar' content='{$fullDataArray['imagetoolbar']}'>";
-            }
-
-            if ($fullDataArray['format-detection'] === "false") {
+            if ($fluidData['format-detection'] === "false") {
                 $tags->meta('format-detection', 'telephone=no');
-            } else if ($fullDataArray['format-detection'] === "true") {
+            } else if ($fluidData['format-detection'] === "true") {
                 $tags->meta('format-detection', 'telephone=yes');
             }
 
-            if ($fullDataArray['theme-color']) {
-                $tags->meta('theme-color', $fullDataArray['theme-color']);
-                $tags->meta('msapplication-TileColor', $fullDataArray['theme-color']);
+            if ($fluidData['theme-color']) {
+                $tags->meta('theme-color', $fluidData['theme-color']);
+                $tags->meta('msapplication-TileColor', $fluidData['theme-color']);
             }
 
-            if ($fullDataArray['last-modified']) {
-                $date = gmdate('D, d M Y H:i:s \G\M\T', intval($fullDataArray['last-modified']));
+            if ($fluidData['last-modified']) {
+                $date = gmdate('D, d M Y H:i:s \G\M\T', intval($fluidData['last-modified']));
                 $tags->meta('Last-Modified', $date);
             }
 
             // geo data - position
-            if($fullDataArray['geo:region']) {
-                $tags->meta("geo:region", $fullDataArray['geo:region']);
+            if($fluidData['geo:region']) {
+                $tags->meta("geo:region", $fluidData['geo:region']);
             }
 
-            if($fullDataArray['geo:placename']) {
-                $tags->meta("geo:placename", $fullDataArray['geo:placename']);
+            if($fluidData['geo:placename']) {
+                $tags->meta("geo:placename", $fluidData['geo:placename']);
             }
 
-            if($fullDataArray['geo:position:long'] && $fullDataArray['geo:position:lat']) {
-                $pos = $fullDataArray['geo:position:long'] . ";" . $fullDataArray['geo:position:lat'];
-                $icbm = $fullDataArray['geo:position:long'] . ", " . $fullDataArray['geo:position:lat'];
+            if($fluidData['geo:position:long'] && $fluidData['geo:position:lat']) {
+                $pos = $fluidData['geo:position:long'] . ";" . $fluidData['geo:position:lat'];
+                $icbm = $fluidData['geo:position:long'] . ", " . $fluidData['geo:position:lat'];
                 $tags->meta("geo:position", $pos);
                 $tags->meta("ICBM", $icbm);
             }
 
+            // Custom
+            if ($fluidData['custom'] && is_array($fluidData['custom'])) {
+                $newData .= $this->setCustomTags($fluidData['custom']);
+            }
+
             // Robots
-            if($fullDataArray['robots:index'] || $fullDataArray['robots:follow']) {
-                $content = $fullDataArray['robots:index'];
-                if (trim($content) != "" && $fullDataArray['robots:follow']) {
+            if($fluidData['robots:index'] || $fluidData['robots:follow']) {
+                $content = $fluidData['robots:index'];
+                if (trim($content) != "" && $fluidData['robots:follow']) {
                     $content .= ',';
                 }
-                $content .= $fullDataArray['robots:follow'];
+                $content .= $fluidData['robots:follow'];
                 $tags->meta("robots", $content);
             }
 
             // Author
-            if($fullDataArray['author']) {
-                $tags->meta("author", $fullDataArray['author']);
+            if($fluidData['author']) {
+                $tags->meta("author", $fluidData['author']);
             }
 
-            if($fullDataArray['copyright']) {
-                $tags->meta("copyright", $fullDataArray['copyright']);
+            if($fluidData['copyright']) {
+                $tags->meta("copyright", $fluidData['copyright']);
             }
 
             // set canonical path-string if set, for slot
             $canonicalGenerator = GeneralUtility::makeInstance(CanonicalGenerator::class);
-            if(!empty($fullDataArray['canonical'])) {
-                $newData .= $canonicalGenerator->generate($fullDataArray['canonical']);
+            if(!empty($fluidData['canonical'])) {
+                $newData .= $canonicalGenerator->generate($fluidData['canonical']);
             } else {
                 $newData .= $canonicalGenerator->generate();
             }
@@ -270,5 +205,128 @@ class PageDataHook {
             $result = $tags->render() . $newData;
             $parameters["headerData"][2] = $result;
         }
+    }
+
+    /**
+     * Generate touchicon meta-tags
+     *
+     * @param string $iconPath Icon file path
+     *
+     * @return string
+     */
+    public function setTouchIcons($iconPath): string {
+        $touchIcons = "";
+        $image = $this->imageService->getImage($iconPath, null, false);
+
+        $processingInstructions = [
+            // Apple
+            'apple' => [
+                'tag' => '<link rel="apple-touch-icon-precomposed" sizes="%sx%s" href="%s">',
+                'sizes' => [
+                    [
+                        'width' => '57',
+                        'height' => '57'
+                    ],
+                    [
+                        'width' => '76',
+                        'height' => '76'
+                    ],
+                    [
+                        'width' => '114',
+                        'height' => '114'
+                    ],
+                    [
+                        'width' => '128',
+                        'height' => '128'
+                    ],
+                    [
+                        'width' => '144',
+                        'height' => '144'
+                    ],
+                    [
+                        'width' => '180',
+                        'height' => '180'
+                    ],
+                    [
+                        'width' => '192',
+                        'height' => '192'
+                    ]
+                ]
+            ],
+            'android' => [
+                'tag' => '<link rel="icon" type="image/png" sizes="%sx%s" href="%s">',
+                'sizes' => [
+                    [
+                        'width' => '16',
+                        'height' => '16'
+                    ],
+                    [
+                        'width' => '128',
+                        'height' => '128'
+                    ],
+                    [
+                        'width' => '192',
+                        'height' => '192'
+                    ]
+                ]
+            ],
+            'microsoft' => [
+                'tag' => '<meta name="msapplication-square%sx%slogo" content="%s" />',
+                'sizes' => [
+                    [
+                        'width' => '70',
+                        'height' => '70'
+                    ],
+                    [
+                        'width' => '150',
+                        'height' => '150'
+                    ],
+                    [
+                        'width' => '310',
+                        'height' => '310'
+                    ],
+                ]
+            ],
+            'others' => [
+                'tag' => '<link rel="icon" type="image/png" sizes="%sx%s" href="%s">',
+                'sizes' => [
+                    [
+                        'width' => '160',
+                        'height' => '160'
+                    ],
+                    [
+                        'width' => '96',
+                        'height' => '96'
+                    ],
+                ]
+            ]
+        ];
+
+        foreach ($processingInstructions as $key => $value) {
+            $tag = $value['tag'];
+            foreach ($value['sizes'] as $sizesKey => $sizesValue) {
+                $processedImage = $this->imageService->applyProcessingInstructions($image, $sizesValue);
+                $imageUri = $this->imageService->getImageUri($processedImage);
+                $touchIcons .= sprintf($tag, $sizesValue['width'], $sizesValue['height'], $imageUri);
+            }
+        }
+
+        return $touchIcons;
+    }
+
+    /**
+     * Set your custom meta-tags
+     *
+     * @param array $customMetaTags
+     *
+     * @return void
+     */
+    public function setCustomTags($customMetaTags): string {
+        $custom = "";
+        foreach ($customMetaTags as $key => $value) {
+            $custom .= "<".$value.">";
+        }
+
+        return $custom;
     }
 }

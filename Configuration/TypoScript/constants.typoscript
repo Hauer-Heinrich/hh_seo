@@ -1,0 +1,36 @@
+### Definitionen for constants editor
+plugin.tx_hhseo {
+    icons {
+        ### Logos & Icons
+        # cat=plugin.tx_hhseo_LogoAndIcons/basic/0100; type=string; label= Main logo path: (without starting slash)
+            logoPath =
+        # cat=plugin.tx_hhseo_LogoAndIcons/basic/0200; type=string; label= Touch icon filepath (320px*320px): (without starting slash)
+            touchIcon =
+        # cat=plugin.tx_hhseo_LogoAndIcons/basic/0300; type=string; label= Favicon filepath: (without starting slash)
+            shortcutIcon =
+    }
+
+    title {
+        #cat=plugin.tx_hhseo_title/page/0100; type=string; label= bevor meta-title
+            beforeMetaTitle =
+        #cat=plugin.tx_hhseo_title/page/0200; type=string; label= after meta-title
+            afterMetaTitle =
+        #cat=plugin.tx_hhseo_title/page/0300; type=string; label= default meta-title-separate
+            titleSeparate =
+        #cat=plugin.tx_hhseo_title/page/0400; type=string; label= meta-title-separate before
+            titleSeparateBefore =
+        #cat=plugin.tx_hhseo_title/page/0500; type=string; label= meta-title-separate after
+            titleSeparateAfter =
+    }
+
+    basic {
+        # cat=plugin.tx_hhseo_basic/basic/0100; type=string; label= Author name fallback if not set in page settings
+            author =
+        # cat=plugin.tx_hhseo_basic/basic/0200; type=boolean; label= automaticly show telephonenumbers as links: (http://www.html-5.com/metatags/format-detection-meta-tag.html)
+            formatDetection = false
+        # cat=plugin.tx_hhseo_Layout/basic/0300; type=color; label= themeColor: (https://developers.google.com/web/fundamentals/design-and-ux/browser-customization/#meta_theme_color_for_chrome_and_opera)
+            themeColor =
+        # cat=plugin.tx_hhseo_basic/basic/0400; type=string; label= Designer name or webaddress
+            designer =
+    }
+}
