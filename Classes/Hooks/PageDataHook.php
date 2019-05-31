@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace HauerHeinrich\HhSeo\Hooks;
 
-use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+// use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use PedroBorges\MetaTags\MetaTags;
 use HauerHeinrich\HhSeo\Helpers\CanonicalGenerator;
@@ -44,6 +44,7 @@ class PageDataHook {
         $this->pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'];
         $this->additionalData = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'];
         $this->imageService = GeneralUtility::makeInstance("TYPO3\\CMS\\Extbase\\Service\\ImageService");
+
         $request = $GLOBALS['TYPO3_REQUEST'];
         $this->url = $request->getUri()->getScheme() . "://" . $request->getUri()->getHost();
     }
@@ -87,14 +88,10 @@ class PageDataHook {
             $tags = new MetaTags;
 
             if($fluidData['title']) {
-                $tags->title(
-                    $fluidData['title'],
-                    $fluidData['titleBefore'],
-                    $fluidData['titleAfter'],
-                    $fluidData['titleSeparate'],
-                    $fluidData['titleSeparateBefore'],
-                    $fluidData['titleSeparateAfter']
-                );
+                $separateBefore = str_replace("&nbsp;", " ", $fluidData['titleSeparateBefore'] ? $fluidData['titleSeparateBefore'] : $fluidData['titleSeparate']);
+                $separateAfter = str_replace("&nbsp;", " ", $fluidData['titleSeparateAfter'] ? $fluidData['titleSeparateAfter'] : $fluidData['titleSeparate']);
+                $title = $fluidData['titleBefore'] . $separateBefore . $fluidData['title'] . $separateAfter . $fluidData['titleAfter'];
+                $tags->title($title);
             }
 
             if($fluidData['description']) {
