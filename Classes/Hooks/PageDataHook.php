@@ -29,7 +29,6 @@ class PageDataHook {
      */
     protected $url;
 
-
     /**
      * imageService
      * @var TYPO3\\CMS\\Extbase\\Service\\ImageService

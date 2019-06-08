@@ -57,4 +57,4 @@ This copyright notice MUST APPEAR in all copies of the repository!
 
 ##### License
 ----
-GNU GENERAL PUBLIC LICENSE Version 2
+GNU GENERAL PUBLIC LICENSE Version 3
