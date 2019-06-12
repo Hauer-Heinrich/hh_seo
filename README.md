@@ -16,17 +16,18 @@ b) "overwrite"-ViewHelper parameter = clear all meta-tags from templates with lo
 
 To use it in your FLUID theme:
 - set namespace like:
-<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+`<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     xmlns:hhs="http://typo3.org/ns/HauerHeinrich/HhSeo/ViewHelpers"
-    data-namespace-typo3-fluid="true">
+    data-namespace-typo3-fluid="true">`
 
-- set or copy the ViewHelper, examples: hh_seo/Resources/Public/Templates/...
+- set or copy the ViewHelper, examples: "hh_seo/Resources/Public/Templates/..."
 
 
 ### Features
 - No own TypoScript required
 - No own php-script required
 - only FLUID (ViewHelper)
+- compatible with EXT:cs_seo
 
 
 ### Todos
