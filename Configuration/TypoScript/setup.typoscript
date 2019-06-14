@@ -2,6 +2,21 @@
 ### TYPO3 SEO - sitemap ###
 ################################################################
 <INCLUDE_TYPOSCRIPT: source="FILE:EXT:seo/Configuration/TypoScript/XmlSitemap/setup.typoscript">
+plugin.tx_seo {
+    config {
+        xmlSitemap {
+            sitemaps {
+                pages {
+                    provider = TYPO3\CMS\Seo\XmlSitemap\PagesXmlSitemapDataProvider
+                    config {
+                        excludedDoktypes = 3, 4, 6, 7, 199, 254, 255
+                        additionalWhere = no_index = 0
+                    }
+                }
+            }
+        }
+    }
+}
 
 ################################################################
 ### Disable Output of HeaderData /-Tags ###

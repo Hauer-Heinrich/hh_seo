@@ -1,5 +1,5 @@
 # hh_seo
-hh_seo is a TYPO3 extension
+hh_seo is a TYPO3 extension.
 You can set your meta-tags in your FLUID-template, and overwrite them in a other template, for example:
 You have a default page-template and generate your meta-tags with hh_seo.
 Then you want overwrite your default page-meta-tags with one from tx_news or other extensions, then you can set:
