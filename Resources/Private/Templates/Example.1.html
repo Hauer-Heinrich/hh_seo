@@ -1,8 +1,8 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-    xmlns:hhs="http://typo3.org/ns/HauerHeinrich/HhSeo/ViewHelpers"
+    xmlns:seo="http://typo3.org/ns/HauerHeinrich/HhSeo/ViewHelpers"
     data-namespace-typo3-fluid="true">
 
-<hhs:metaTag order="0">
+<seo:metaTag order="0">
     [{
         <f:comment></f:comment>
         "title": "{data.title}",
@@ -12,7 +12,7 @@
         "titleSeparateBefore": "{hhSeo.titleSeparateBefore}",
         "titleSeparateAfter": "{hhSeo.titleSeparateAfter}",
 
-        "description": "{data.description}",
+        "description": "<seo:formatJson data="{data.description}" />",
 
         "designer": "{hhSeo.designer}",
         "theme-color": "{hhSeo.themeColor }",
@@ -46,6 +46,6 @@
             "otherCustomKey": "meta http-equiv='Content-Type' content='...;' charset='...' /"
         }
     }]
-</hhs:metaTag>
+</seo:metaTag>
 
 </html>
