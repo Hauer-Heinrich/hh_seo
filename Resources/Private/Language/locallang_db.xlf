@@ -3,6 +3,15 @@
     <file source-language="en" datatype="plaintext" original="messages" date="2019-04-03T17:00:16Z" product-name="hh_seo">
         <header/>
         <body>
+            <trans-unit id="pages.html_head">
+                <source>Analytics Code in HTML Head</source>
+            </trans-unit>
+            <trans-unit id="pages.html_body_top">
+                <source>Analytics Code in HTML Body Top</source>
+            </trans-unit>
+            <trans-unit id="pages.html_body_bottom">
+                <source>Analytics Code in HTML Body Bottom</source>
+            </trans-unit>
             <trans-unit id="pages.geo_region">
                 <source>Geo region</source>
             </trans-unit>

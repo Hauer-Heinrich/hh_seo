@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace HauerHeinrich\HhSeo\Hooks;
 
-// use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use PedroBorges\MetaTags\MetaTags;
 use HauerHeinrich\HhSeo\Helpers\CanonicalGenerator;
@@ -43,6 +43,12 @@ class PageDataHook {
         $this->pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'];
         $this->additionalData = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'];
         $this->imageService = GeneralUtility::makeInstance("TYPO3\\CMS\\Extbase\\Service\\ImageService");
+
+        DebuggerUtility::var_dump($extbaseFrameworkConfiguration);
+
+        //$TSparserObject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\TypoScript\Parser\TypoScriptParser::class);
+        //$TSparserObject->parse($this->pluginSettings);
+        // DebuggerUtility::var_dump($TSparserObject);
 
         $request = $GLOBALS['TYPO3_REQUEST'];
         $this->url = $request->getUri()->getScheme() . "://" . $request->getUri()->getHost();
