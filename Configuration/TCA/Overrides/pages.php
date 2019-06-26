@@ -9,21 +9,24 @@ $fields = [
         'label' => 'LLL:EXT:hh_seo/Resources/Private/Language/locallang_db.xlf:pages.html_head',
         'exclude' => 1,
         'config' => [
-            'type' => 'text'
+            'type' => 'text',
+            'eval' => 'trim',
         ],
     ],
     'html_body_top' => [
         'label' => 'LLL:EXT:hh_seo/Resources/Private/Language/locallang_db.xlf:pages.html_body_top',
         'exclude' => 1,
         'config' => [
-            'type' => 'text'
+            'type' => 'text',
+            'eval' => 'trim',
         ],
     ],
     'html_body_bottom' => [
         'label' => 'LLL:EXT:hh_seo/Resources/Private/Language/locallang_db.xlf:pages.html_body_bottom',
         'exclude' => 1,
         'config' => [
-            'type' => 'text'
+            'type' => 'text',
+            'eval' => 'trim',
         ],
     ],
     'geo_region' => [

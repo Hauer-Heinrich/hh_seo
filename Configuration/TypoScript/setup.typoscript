@@ -34,9 +34,6 @@ plugin.tx_hhseo {
     author = {$plugin.tx_hhseo.basic.author}
     formatDetection = {$plugin.tx_hhseo.basic.formatDetection}
     designer = {$plugin.tx_hhseo.basic.designer}
-    htmlHead = {field:html_head}
-    htmlBodyTop = {field:html_body_top}
-    htmlBodyBottom = {field:html_body_bottom}
 }
 
 page {
