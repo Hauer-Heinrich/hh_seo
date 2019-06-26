@@ -5,6 +5,30 @@ if (!defined('TYPO3_MODE')) {
 
 // Configure new fields:
 $fields = [
+    'html_head' => [
+        'label' => 'LLL:EXT:hh_seo/Resources/Private/Language/locallang_db.xlf:pages.html_head',
+        'exclude' => 1,
+        'config' => [
+            'type' => 'text',
+            'eval' => 'trim',
+        ],
+    ],
+    'html_body_top' => [
+        'label' => 'LLL:EXT:hh_seo/Resources/Private/Language/locallang_db.xlf:pages.html_body_top',
+        'exclude' => 1,
+        'config' => [
+            'type' => 'text',
+            'eval' => 'trim',
+        ],
+    ],
+    'html_body_bottom' => [
+        'label' => 'LLL:EXT:hh_seo/Resources/Private/Language/locallang_db.xlf:pages.html_body_bottom',
+        'exclude' => 1,
+        'config' => [
+            'type' => 'text',
+            'eval' => 'trim',
+        ],
+    ],
     'geo_region' => [
         'label' => 'LLL:EXT:hh_seo/Resources/Private/Language/locallang_db.xlf:pages.geo_region',
         'exclude' => 1,
@@ -48,6 +72,12 @@ $fields = [
     '--palette--;http://www.geo-tag.de/generator/de.html;geo_place', // Field list to add
     '1', // List of specific types to add the field list to. (If empty, all type entries are affected)
     'after:description' // Insert fields before (default) or after one, or replace a field
+);
+
+// Make fields visible in the TCEforms:
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes(
+    'pages', // Table name
+    '--div--;SEO Analytics,html_head,html_body_top,html_body_bottom'
 );
 
 // Add the new palette:

@@ -5,6 +5,7 @@ namespace HauerHeinrich\HhSeo\Hooks;
 
 // use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use PedroBorges\MetaTags\MetaTags;
 use HauerHeinrich\HhSeo\Helpers\CanonicalGenerator;
 
@@ -46,6 +47,20 @@ class PageDataHook {
 
         $request = $GLOBALS['TYPO3_REQUEST'];
         $this->url = $request->getUri()->getScheme() . "://" . $request->getUri()->getHost();
+    }
+
+    /**
+     * @return PageRenderer
+     */
+    protected function getPageRenderer(): PageRenderer {
+        return GeneralUtility::makeInstance(PageRenderer::class);
+    }
+
+    /**
+     * @return TypoScriptFrontendController
+     */
+    protected function getTypoScriptFrontendController(): TypoScriptFrontendController {
+        return $GLOBALS['TSFE'] ?? GeneralUtility::makeInstance(TypoScriptFrontendController::class);
     }
 
     /**
@@ -201,6 +216,23 @@ class PageDataHook {
             $result = $tags->render() . $newData;
             $parameters["headerData"][2] = $result;
         }
+
+        $contentObjectRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::class);
+        $htmlHead = $contentObjectRenderer->getData('levelfield : -1 , html_head, slide');
+        $htmlBodyTop = $contentObjectRenderer->getData('levelfield : -1 , html_body_top, slide');
+        $htmlBodyBottom = $contentObjectRenderer->getData('levelfield : -1 , html_body_bottom, slide');
+
+        if (!empty($htmlHead)) {
+            $this->setHTMLCodeHead($htmlHead);
+        }
+
+        if (!empty($htmlBodyTop)) {
+            $this->setHTMLCodeBodyTop($htmlBodyTop);
+        }
+
+        if (!empty($htmlBodyBottom)) {
+            $this->setHTMLCodeBodyBottom($htmlBodyBottom);
+        }
     }
 
     /**
@@ -324,5 +356,33 @@ class PageDataHook {
         }
 
         return $custom;
+    }
+
+    /**
+     * Set your custom HTML Code
+     *
+     * @param string $data
+     */
+    public function setHTMLCodeHead($data) {
+        $this->getPageRenderer()->addHeaderData($data);
+    }
+
+    /**
+     * Set your custom HTML Code
+     *
+     * @param string $data
+     */
+    public function setHTMLCodeBodyTop($data) {
+        $bodyContent = $this->getPageRenderer()->getBodyContent();
+        $this->getPageRenderer()->setBodyContent(substr_replace($bodyContent, $data, 1+strpos($bodyContent, ">"), 0));
+    }
+
+    /**
+     * Set your custom HTML Code
+     *
+     * @param string $data
+     */
+    public function setHTMLCodeBodyBottom($data) {
+        $this->getPageRenderer()->addFooterData($data);
     }
 }
