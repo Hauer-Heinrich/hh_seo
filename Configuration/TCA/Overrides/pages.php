@@ -10,6 +10,7 @@ $fields = [
         'exclude' => 1,
         'config' => [
             'type' => 'text',
+            'default' => '',
             'eval' => 'trim',
         ],
     ],
@@ -18,6 +19,7 @@ $fields = [
         'exclude' => 1,
         'config' => [
             'type' => 'text',
+            'default' => '',
             'eval' => 'trim',
         ],
     ],
@@ -26,6 +28,7 @@ $fields = [
         'exclude' => 1,
         'config' => [
             'type' => 'text',
+            'default' => '',
             'eval' => 'trim',
         ],
     ],
