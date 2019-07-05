@@ -43,8 +43,7 @@ class CanonicalGenerator
      *
      * @param TypoScriptFrontendController $typoScriptFrontendController
      */
-    public function __construct(TypoScriptFrontendController $typoScriptFrontendController = null)
-    {
+    public function __construct(TypoScriptFrontendController $typoScriptFrontendController = null) {
         if ($typoScriptFrontendController === null) {
             $typoScriptFrontendController = $this->getTypoScriptFrontendController();
         }
