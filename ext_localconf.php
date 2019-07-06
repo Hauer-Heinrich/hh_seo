@@ -14,8 +14,8 @@ call_user_func(function() {
     if (TYPO3_MODE === 'FE') {
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php']['render-preProcess'][$extensionKey] =
             HauerHeinrich\HhSeo\Hooks\PageDataHook::class . '->addPageData';
-        // $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator'][$extensionKey][] =
-        //     HauerHeinrich\HhSeo\Hooks\PageDataHook1::class . '->test'; // params = page-data
+        // $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/index_ts.php']['preprocessRequest'][] =
+        //     HauerHeinrich\HhSeo\Hooks\TestHook::class . '->test';
     }
 
     $rootLineFields = &$GLOBALS["TYPO3_CONF_VARS"]["FE"]["addRootLineFields"];
