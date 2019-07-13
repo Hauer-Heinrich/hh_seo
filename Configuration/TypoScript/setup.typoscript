@@ -59,18 +59,48 @@ page {
                 as = hhSeo
             }
 
-            ################################################################
-            ### Meta-Tags Images ###
-            ################################################################
-            2568 = TYPO3\CMS\Frontend\DataProcessing\FilesProcessor
+            2568 = HauerHeinrich\HhSeo\DataProcessing\FilesProcessor
             2568 {
-                references.fieldName = og_image
+                # references.fieldName = og_image
+                references {
+                    fieldName = og_image
+                    data = fullRootLine:-2
+                    table = pages
+                }
+                renderObj = COA
+                renderObj {
+                    10 = IMG_RESOURCE
+                    10 {
+                        file {
+                            import.data = file:current:uid
+                            treatIdAsReference = 1
+                            width = 1280c
+                            height = 720c
+                        }
+                    }
+                }
                 as = og_image
             }
 
-            2668 = TYPO3\CMS\Frontend\DataProcessing\FilesProcessor
+            2668 = HauerHeinrich\HhSeo\DataProcessing\FilesProcessor
             2668 {
-                references.fieldName = twitter_image
+                references {
+                    fieldName = twitter_image
+                    data = fullRootLine:-2
+                    table = pages
+                }
+                renderObj = COA
+                renderObj {
+                    10 = IMG_RESOURCE
+                    10 {
+                        file {
+                            import.data = file:current:uid
+                            treatIdAsReference = 1
+                            width = 440c
+                            height = 220c
+                        }
+                    }
+                }
                 as = twitter_image
             }
         }
