@@ -5,33 +5,66 @@ namespace HauerHeinrich\HhSeo\Hooks;
 
 // use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Page\PageRenderer;
+use \TYPO3\CMS\Core\Page\PageRenderer;
+use \TYPO3\CMS\Frontend\Page\PageRepository;
+use \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use PedroBorges\MetaTags\MetaTags;
 use HauerHeinrich\HhSeo\Helpers\CanonicalGenerator;
 
 class PageDataHook {
 
     /**
+     * pageRenderer
+     *
+     * @var TYPO3\\CMS\\Core\\Page\\PageRenderer
+     */
+    protected $pageRenderer;
+
+    /**
+     * typoScriptFrontendController
+     *
+     * @var TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController
+     */
+    protected $typoScriptFrontendController;
+
+    /**
+     * pageRepository
+     *
+     * @var TYPO3\\CMS\\Frontend\\Page\\PageRepository
+     */
+    protected $pageRepository;
+
+    /**
+     * currentPageProperties
+     *
+     * @var array
+     */
+    protected $currentPageProperties;
+
+    /**
      * pluginSettings
+     *
      * @var array
      */
     protected $pluginSettings;
 
-
     /**
      * additionalData
+     *
      * @var array
      */
     protected $additionalData;
 
     /**
      * url
+     *
      * @var string
      */
     protected $url;
 
     /**
      * imageService
+     *
      * @var TYPO3\\CMS\\Extbase\\Service\\ImageService
      */
     protected $imageService;
@@ -41,26 +74,37 @@ class PageDataHook {
         $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
         $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 
+        $this->pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+        $this->typoScriptFrontendController = $GLOBALS['TSFE'] ?? GeneralUtility::makeInstance(TypoScriptFrontendController::class);
+        $this->pageRepository = GeneralUtility::makeInstance(PageRepository::class);
+
         $this->pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'];
         $this->additionalData = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'];
-        $this->imageService = GeneralUtility::makeInstance("TYPO3\\CMS\\Extbase\\Service\\ImageService");
+        $this->imageService = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Service\\ImageService');
 
         $request = $GLOBALS['TYPO3_REQUEST'];
-        $this->url = $request->getUri()->getScheme() . "://" . $request->getUri()->getHost();
+        $this->url = rtrim($request->getUri()->getScheme() . '://' . $request->getUri()->getHost(), '/');
+
+        $this->currentPageProperties = $this->pageRepository->getPage($this->typoScriptFrontendController->getRequestedId());
     }
 
     /**
-     * @return PageRenderer
+     * Get the current language
+     *
+     * @param \TYPO3\CMS\Core\Http\ServerRequest $request
+     * @param string $attr - hreflang, base, locale, languageId, etc. from \TYPO3\CMS\Core\Site\Entity\SiteLanguage
+     * @return mixed
      */
-    protected function getPageRenderer(): PageRenderer {
-        return GeneralUtility::makeInstance(PageRenderer::class);
-    }
-
-    /**
-     * @return TypoScriptFrontendController
-     */
-    protected function getTypoScriptFrontendController(): TypoScriptFrontendController {
-        return $GLOBALS['TSFE'] ?? GeneralUtility::makeInstance(TypoScriptFrontendController::class);
+    protected function getCurrentLanguage(\TYPO3\CMS\Core\Http\ServerRequest $request, $attr = null) {
+        $attr = ucfirst($attr);
+        $get = 'get'. $attr;
+        $language = $request->getAttribute('language');
+        try {
+            $value = $language->{$get}();
+            return $value;
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**
@@ -102,11 +146,9 @@ class PageDataHook {
             $tags = new MetaTags;
 
             if($fluidData['title']) {
-                $separateBefore = str_replace("&nbsp;", " ", $fluidData['titleSeparateBefore'] ? $fluidData['titleSeparateBefore'] : $fluidData['titleSeparate']);
-                $separateAfter = str_replace("&nbsp;", " ", $fluidData['titleSeparateAfter'] ? $fluidData['titleSeparateAfter'] : $fluidData['titleSeparate']);
-                $beforeTitle = $fluidData['titleBefore'] ? $fluidData['titleBefore'] . $separateBefore : "";
-                $afterTitle = $fluidData['titleAfter'] ? $fluidData['titleAfter'] . $separateBefore : "";
-                $title = $beforeTitle . $fluidData['title'] . $afterTitle;
+                $separateBefore = str_replace('&nbsp;', ' ', $fluidData['titleSeparateBefore'] ? $fluidData['titleSeparateBefore'] : $fluidData['titleSeparate']);
+                $separateAfter = str_replace('&nbsp;', ' ', $fluidData['titleSeparateAfter'] ? $fluidData['titleSeparateAfter'] : $fluidData['titleSeparate']);
+                $title = $fluidData['titleBefore'] . $separateBefore . $fluidData['title'] . $separateAfter . $fluidData['titleAfter'];
                 $tags->title($title);
             }
 
@@ -114,30 +156,50 @@ class PageDataHook {
                 $tags->meta('description', $fluidData['description']);
             }
 
+            if($fluidData['og:type']) {
+                $tags->og('type', $fluidData['og:type']);
+            } else if(!$fluidData['og:type']) {
+                $tags->og('type', 'website');
+            }
+
             if($fluidData['og:title']) {
-                $tags->og("title", $fluidData['og:title']);
+                $tags->og('title', $fluidData['og:title']);
             }
 
             if($fluidData['og:description']) {
-                $tags->og("description", $fluidData['og:description']);
+                $tags->og('description', $fluidData['og:description']);
             }
 
             if($fluidData['og:image']) {
+                // $image = $this->imageService->getImage($fluidData['og:image'], null, false);
+                // $test = $this->imageService->getCompatibilityImageResourceValues($image);
+                // DebuggerUtility::var_dump($image->getProperty('width'));
+
                 if(is_array($fluidData['og:image'])) {
                     foreach ($fluidData['og:image'] as $key => $value) {
-                        $tags->og('image', $this->url . "/". $value);
+                        $tags->og('image', $this->url . '/'. ltrim($value, '/'));
                     }
                 } else {
-                    $tags->og('image', $this->url . "/". $fluidData['og:image']);
+                    $tags->og('image', $this->url . '/'. ltrim($fluidData['og:image'], '/'));
                 }
             }
 
             if($fluidData['twitter:title']) {
-                $tags->twitter("title", $fluidData['twitter:title']);
+                $tags->twitter('title', $fluidData['twitter:title']);
             }
 
             if($fluidData['twitter:description']) {
-                $tags->twitter("description", $fluidData['twitter:description']);
+                $tags->twitter('description', $fluidData['twitter:description']);
+            }
+
+            if($fluidData['twitter:image']) {
+                if(is_array($fluidData['twitter:image'])) {
+                    foreach ($fluidData['twitter:image'] as $key => $value) {
+                        $tags->twitter('image', $this->url . '/'. ltrim($value, '/'));
+                    }
+                } else {
+                    $tags->twitter('image', $this->url . '/'. ltrim($fluidData['twitter:image'], '/'));
+                }
             }
 
             if($fluidData['shortcutIcon']) {
@@ -150,9 +212,9 @@ class PageDataHook {
                 $newData .= $this->setTouchIcons($fluidData['touchIcon']);
             }
 
-            if ($fluidData['format-detection'] === "false") {
+            if ($fluidData['format-detection'] === 'false') {
                 $tags->meta('format-detection', 'telephone=no');
-            } else if ($fluidData['format-detection'] === "true") {
+            } else if ($fluidData['format-detection'] === 'true') {
                 $tags->meta('format-detection', 'telephone=yes');
             }
 
@@ -168,18 +230,18 @@ class PageDataHook {
 
             // geo data - position
             if($fluidData['geo:region']) {
-                $tags->meta("geo:region", $fluidData['geo:region']);
+                $tags->meta('geo:region', $fluidData['geo:region']);
             }
 
             if($fluidData['geo:placename']) {
-                $tags->meta("geo:placename", $fluidData['geo:placename']);
+                $tags->meta('geo:placename', $fluidData['geo:placename']);
             }
 
             if($fluidData['geo:position:long'] && $fluidData['geo:position:lat']) {
-                $pos = $fluidData['geo:position:long'] . ";" . $fluidData['geo:position:lat'];
-                $icbm = $fluidData['geo:position:long'] . ", " . $fluidData['geo:position:lat'];
-                $tags->meta("geo:position", $pos);
-                $tags->meta("ICBM", $icbm);
+                $pos = $fluidData['geo:position:long'] . ';' . $fluidData['geo:position:lat'];
+                $icbm = $fluidData['geo:position:long'] . ', ' . $fluidData['geo:position:lat'];
+                $tags->meta('geo:position', $pos);
+                $tags->meta('ICBM', $icbm);
             }
 
             // Custom
@@ -190,20 +252,20 @@ class PageDataHook {
             // Robots
             if($fluidData['robots:index'] || $fluidData['robots:follow']) {
                 $content = $fluidData['robots:index'];
-                if (trim($content) != "" && $fluidData['robots:follow']) {
+                if (trim($content) != '' && $fluidData['robots:follow']) {
                     $content .= ',';
                 }
                 $content .= $fluidData['robots:follow'];
-                $tags->meta("robots", $content);
+                $tags->meta('robots', $content);
             }
 
             // Author
             if($fluidData['author']) {
-                $tags->meta("author", $fluidData['author']);
+                $tags->meta('author', $fluidData['author']);
             }
 
             if($fluidData['copyright']) {
-                $tags->meta("copyright", $fluidData['copyright']);
+                $tags->meta('copyright', $fluidData['copyright']);
             }
 
             // set canonical path-string if set, for slot
@@ -216,13 +278,13 @@ class PageDataHook {
 
             // output to HTML
             $result = $tags->render() . $newData;
-            $parameters["headerData"][2] = $result;
+            $parameters['headerData'][2] = $result;
         }
 
         $contentObjectRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::class);
-        $htmlHead = $contentObjectRenderer->getData('levelfield : -1 , html_head, slide');
-        $htmlBodyTop = $contentObjectRenderer->getData('levelfield : -1 , html_body_top, slide');
-        $htmlBodyBottom = $contentObjectRenderer->getData('levelfield : -1 , html_body_bottom, slide');
+        $htmlHead = $contentObjectRenderer->getData('levelfield : -1, html_head, slide');
+        $htmlBodyTop = $contentObjectRenderer->getData('levelfield : -1, html_body_top, slide');
+        $htmlBodyBottom = $contentObjectRenderer->getData('levelfield : -1, html_body_bottom, slide');
 
         if (!empty($htmlHead)) {
             $this->setHTMLCodeHead($htmlHead);
@@ -245,7 +307,7 @@ class PageDataHook {
      * @return string
      */
     public function setTouchIcons($iconPath): string {
-        $touchIcons = "";
+        $touchIcons = '';
         $image = $this->imageService->getImage($iconPath, null, false);
 
         $processingInstructions = [
@@ -352,9 +414,9 @@ class PageDataHook {
      * @return void
      */
     public function setCustomTags($customMetaTags): string {
-        $custom = "";
+        $custom = '';
         foreach ($customMetaTags as $key => $value) {
-            $custom .= "<".$value.">";
+            $custom .= '<'.$value.'>';
         }
 
         return $custom;
@@ -366,7 +428,7 @@ class PageDataHook {
      * @param string $data
      */
     public function setHTMLCodeHead($data) {
-        $this->getPageRenderer()->addHeaderData($data);
+        $this->pageRenderer->addHeaderData($data);
     }
 
     /**
@@ -375,8 +437,8 @@ class PageDataHook {
      * @param string $data
      */
     public function setHTMLCodeBodyTop($data) {
-        $bodyContent = $this->getPageRenderer()->getBodyContent();
-        $this->getPageRenderer()->setBodyContent(substr_replace($bodyContent, $data, 1+strpos($bodyContent, ">"), 0));
+        $bodyContent = $this->pageRenderer->getBodyContent();
+        $this->pageRenderer->setBodyContent(substr_replace($bodyContent, $data, 1+strpos($bodyContent, '>'), 0));
     }
 
     /**
@@ -385,6 +447,6 @@ class PageDataHook {
      * @param string $data
      */
     public function setHTMLCodeBodyBottom($data) {
-        $this->getPageRenderer()->addFooterData($data);
+        $this->pageRenderer->addFooterData($data);
     }
 }
