@@ -29,7 +29,7 @@
         "og:title": "{data.og_title}",
         "og:description": "{data.og_description}",
         "og:image": {
-            <f:if condition="{og_image->f:count()} > 1">
+            <f:if condition="{og_image->f:count()} > 0">
                 <f:for each="{og_image}" as="image" iteration="i">
                     "{i.index}": "{f:uri.image(src: '{image.uid}', treatIdAsReference: 1)}"
                     <f:if condition="{i.isLast} == false">
