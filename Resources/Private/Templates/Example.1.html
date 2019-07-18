@@ -28,7 +28,16 @@
 
         "og:title": "{data.og_title}",
         "og:description": "{data.og_description}",
-        "og:image": "<f:if condition="{og_image.0}">{f:uri.image(src: '{og_image.0.uid}', treatIdAsReference: 1)}</f:if>",
+        "og:image": {
+            <f:if condition="{og_image->f:count()} > 1">
+                <f:for each="{og_image}" as="image" iteration="i">
+                    "{i.index}": "{f:uri.image(src: '{image.uid}', treatIdAsReference: 1)}"
+                    <f:if condition="{i.isLast} == false">
+                        ,
+                    </f:if>
+                </f:for>
+            </f:if>
+        },
 
         "twitter:title": "{data.twitter_title}",
         "twitter:description": "{data.twitter_description}",
