@@ -1,7 +1,7 @@
 {
     "name": "hauerheinrich/hh-seo",
     "type": "typo3-cms-extension",
-    "description": "",
+    "description": "Hauer-Heinrich - fluid seo. Sets meta-tags over fluid template.",
     "authors": [
         {
             "name": "Christian Hackl",
