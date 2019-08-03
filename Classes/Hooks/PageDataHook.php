@@ -252,7 +252,7 @@ class PageDataHook {
             // Robots
             if($fluidData['robots:index'] || $fluidData['robots:follow']) {
                 $content = $fluidData['robots:index'];
-                if (trim($content) != '' && $fluidData['robots:follow']) {
+                if ($content != null && trim($content) != '' && $fluidData['robots:follow']) {
                     $content .= ',';
                 }
                 $content .= $fluidData['robots:follow'];
