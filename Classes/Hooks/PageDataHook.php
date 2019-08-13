@@ -148,7 +148,9 @@ class PageDataHook {
             if($fluidData['title']) {
                 $separateBefore = str_replace('&nbsp;', ' ', $fluidData['titleSeparateBefore'] ? $fluidData['titleSeparateBefore'] : $fluidData['titleSeparate']);
                 $separateAfter = str_replace('&nbsp;', ' ', $fluidData['titleSeparateAfter'] ? $fluidData['titleSeparateAfter'] : $fluidData['titleSeparate']);
-                $title = $fluidData['titleBefore'] . $separateBefore . $fluidData['title'] . $separateAfter . $fluidData['titleAfter'];
+                $titleBefore = $fluidData['titleBefore'] != null ? $fluidData['titleBefore'] . $separateBefore : '';
+                $titleAfter = $fluidData['titleAfter'] != null ? $separateAfter . $fluidData['titleAfter'] : '';
+                $title = $titleBefore . $fluidData['title'] . $titleAfter;
                 $tags->title($title);
             }
 
