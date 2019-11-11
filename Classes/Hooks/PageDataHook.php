@@ -280,7 +280,7 @@ class PageDataHook {
 
             // output to HTML
             $result = $tags->render() . $newData;
-            $parameters['headerData'][2] = $result;
+            array_unshift($parameters['headerData'], $result);
         }
 
         $contentObjectRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::class);
