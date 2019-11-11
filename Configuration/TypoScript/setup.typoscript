@@ -105,6 +105,20 @@ page {
             }
         }
 
+        settings {
+            shortcutIcon = {$plugin.tx_hhseo.icons.shortcutIcon}
+            touchIcon = {$plugin.tx_hhseo.icons.touchIcon}
+            titleBefore = {$plugin.tx_hhseo.title.beforeMetaTitle}
+            titleAfter = {$plugin.tx_hhseo.title.afterMetaTitle}
+            titleSeparate = {$plugin.tx_hhseo.title.titleSeparate}
+            titleSeparateBefore = {$plugin.tx_hhseo.title.titleSeparateBefore}
+            titleSeparateAfter = {$plugin.tx_hhseo.title.titleSeparateAfter}
+            themeColor = {$plugin.tx_hhseo.basic.themeColor}
+            author = {$plugin.tx_hhseo.basic.author}
+            formatDetection = {$plugin.tx_hhseo.basic.formatDetection}
+            designer = {$plugin.tx_hhseo.basic.designer}
+        }
+
         variables {
             hhSeo_slide_geoRegion = TEXT
             hhSeo_slide_geoRegion {
