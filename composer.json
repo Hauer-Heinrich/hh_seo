@@ -14,7 +14,7 @@
     "license": ["GPL-2.0-or-later"],
     "keywords": ["TYPO3 CMS", "SEO", "Extension"],
     "replace": {
-        "hh_seo": "self.version",
+        "hauer-heinrich/hh_seo": "self.version",
         "typo3-ter/hh-seo": "self.version"
     },
     "require": {
