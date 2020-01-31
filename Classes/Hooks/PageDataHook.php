@@ -116,6 +116,17 @@ class PageDataHook {
     public function addPageData(&$parameters) {
         $metaTag = $this->additionalData['MetaTag'];
 
+        // TODO: make all meta-tags available as single viewhelper
+        // TODO: overwrite json data with the one from the single viewhelpers
+        //       so json data is less important by default
+        if(is_array($this->additionalData['title'])) {
+            self::setTitle($this->additionalData['title']);
+        }
+
+        if(is_array($this->additionalData['description'])) {
+            self::setDescription($this->additionalData['description']);
+        }
+
         if(!empty($metaTag)) {
             ksort($metaTag);
 
