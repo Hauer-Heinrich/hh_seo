@@ -1,14 +1,43 @@
 <?php
 namespace HauerHeinrich\HhSeo\DataProcessing;
 
-// use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Resource\FileCollector;
-use TYPO3\CMS\Core\Utility\RootlineUtility;
 
-class FilesProcessor implements DataProcessorInterface {
+/**
+ * This data processor can be used for processing data for record which contain
+ * relations to sys_file records (e.g. sys_file_reference records) or for fetching
+ * files directly from UIDs or from folders or collections.
+ *
+ *
+ * Example TypoScript configuration:
+ *
+ * 10 = TYPO3\CMS\Frontend\DataProcessing\FilesProcessor
+ * 10 {
+ *   references.fieldName = image
+ *   collections = 13,15
+ *   as = myfiles
+ * }
+ *
+ * whereas "myfiles" can further be used as a variable {myfiles} inside a Fluid template for iteration.
+ */
+class FilesProcessor implements DataProcessorInterface
+{
     /**
      * Process data of a record to resolve File objects to the view
      *
@@ -18,7 +47,8 @@ class FilesProcessor implements DataProcessorInterface {
      * @param array $processedData Key/value store of processed data (e.g. to be passed to a Fluid View)
      * @return array the processed data as key/value store
      */
-    public function process(ContentObjectRenderer $cObj, array $contentObjectConfiguration, array $processorConfiguration, array $processedData) {
+    public function process(ContentObjectRenderer $cObj, array $contentObjectConfiguration, array $processorConfiguration, array $processedData)
+    {
         if (isset($processorConfiguration['if.']) && !$cObj->checkIf($processorConfiguration['if.'])) {
             return $processedData;
         }
@@ -28,84 +58,24 @@ class FilesProcessor implements DataProcessorInterface {
         $fileCollector = GeneralUtility::makeInstance(FileCollector::class);
 
         // references / relations
-        if (!empty($processorConfiguration['references.'])) {
-            $referenceConfiguration = $processorConfiguration['references.'];
-            $relationField = $cObj->stdWrapValue('fieldName', $referenceConfiguration);
-            $relationData = $cObj->stdWrapValue('data', $referenceConfiguration);
+        if (
+            (isset($processorConfiguration['references']) && $processorConfiguration['references'])
+            || (isset($processorConfiguration['references.']) && $processorConfiguration['references.'])
+        ) {
+            $referencesUidList = $cObj->stdWrapValue('references', $processorConfiguration);
+            $referencesUids = GeneralUtility::intExplode(',', $referencesUidList, true);
+            $fileCollector->addFileReferences($referencesUids);
 
-            // If no reference fieldName is set, there's nothing to do
-            if (!empty($relationField)) {
-                // Fetch the references of the default element
-                $relationTable = $cObj->stdWrapValue('table', $referenceConfiguration, $cObj->getCurrentTable());
+            if (!empty($processorConfiguration['references.'])) {
+                $referenceConfiguration = $processorConfiguration['references.'];
+                $relationField = $cObj->stdWrapValue('fieldName', $referenceConfiguration);
 
-                if (!empty($relationTable)) {
-                    $fileCollector->addFilesFromRelation($relationTable, $relationField, $cObj->data);
-
-                    if(empty($fileCollector->getFiles()) && !empty($relationData)) {
-                        $parts = explode(':', $relationData, 2);
-                        $type = strtolower(trim($parts[0]));
-                        $key = trim($parts[1] ?? '');
-
-                        // - Page tree root [-2]
-                        // - 1. page before [-1]
-                        // - Site root (root template here!) [0]
-                        // - Here you are! Current [1]
-                        $relationDataHowDeep = -2;
-                        switch ($type) {
-                            case 'fullrootline':
-                                $keyParts = GeneralUtility::trimExplode(',', $key);
-                                $relationDataHowDeep = (int)$keyParts[0];
-                                break;
-
-                            default:
-                                break;
-                        }
-
-                        $rootLine = GeneralUtility::makeInstance(RootlineUtility::class, $cObj->getData("field : uid"))->get();
-
-                        // count 1,2,3 - starts not from 0 --- but rootLine does!
-                        // so we have to ignore the current data | -1 == current
-                        $rootLineLength = count($rootLine) - 1;
-
-                        switch ($relationDataHowDeep) {
-                            case 0:
-                                $parentFiles = $cObj->rootLineValue($rootLine[0], $relationField);
-
-                                if (!empty($parentFiles)) {
-                                    $parentArrayFileUids = GeneralUtility::intExplode(',', $parentFiles, true);
-                                    $fileCollector->addFileReferences($parentArrayFileUids);
-                                    break;
-                                }
-                                break;
-
-                            case -1:
-                                $parentFiles = $cObj->rootLineValue($rootLineLength - 1, $relationField);
-
-                                if (!empty($parentFiles)) {
-                                    $parentArrayFileUids = GeneralUtility::intExplode(',', $parentFiles, true);
-                                    $fileCollector->addFileReferences($parentArrayFileUids);
-                                    break;
-                                }
-                                break;
-
-                            default:
-                                // relationDataHowDeep = -2
-                                foreach ($rootLine as $key => $value) {
-                                    // skip current data
-                                    if($rootLineLength === $key) {
-                                        continue;
-                                    }
-
-                                    $parentFiles = $cObj->rootLineValue($key, $relationField);
-
-                                    if (!empty($parentFiles)) {
-                                        $parentArrayFileUids = GeneralUtility::intExplode(',', $parentFiles, true);
-                                        $fileCollector->addFileReferences($parentArrayFileUids);
-                                        break;
-                                    }
-                                }
-                                break;
-                        }
+                // If no reference fieldName is set, there's nothing to do
+                if (!empty($relationField)) {
+                    // Fetch the references of the default element
+                    $relationTable = $cObj->stdWrapValue('table', $referenceConfiguration, $cObj->getCurrentTable());
+                    if (!empty($relationTable)) {
+                        $fileCollector->addFilesFromRelation($relationTable, $relationField, $cObj->data);
                     }
                 }
             }
