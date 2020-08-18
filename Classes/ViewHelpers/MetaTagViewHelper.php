@@ -31,6 +31,8 @@ namespace HauerHeinrich\HhSeo\ViewHelpers;
  */
 
 // use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use function GuzzleHttp\json_decode;
@@ -91,7 +93,7 @@ class MetaTagViewHelper extends AbstractViewHelper {
      * @return string
      */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
-        $dataType = $arguments["type"];
+        $dataType = $arguments['type'];
         $dataArray[$dataType] = $arguments;
         $childData = [];
         $renderChildren = $renderChildrenClosure();

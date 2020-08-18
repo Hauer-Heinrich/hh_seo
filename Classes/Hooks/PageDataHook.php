@@ -69,10 +69,19 @@ class PageDataHook {
      */
     protected $imageService;
 
+    /**
+     * currentPageUid
+     *
+     * @var int
+     */
+    protected $currentPageUid;
+
     public function __construct() {
         $objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\Extbase\\Object\\ObjectManager');
         $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
         $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+
+        $this->currentPageUid = $GLOBALS['TSFE']->id;
 
         $this->pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
         $this->typoScriptFrontendController = $GLOBALS['TSFE'] ?? GeneralUtility::makeInstance(TypoScriptFrontendController::class);
@@ -119,13 +128,17 @@ class PageDataHook {
         // TODO: make all meta-tags available as single viewhelper
         // TODO: overwrite json data with the one from the single viewhelpers
         //       so json data is less important by default
-        if(is_array($this->additionalData['title'])) {
-            self::setTitle($this->additionalData['title']);
-        }
+        // if(is_array($this->additionalData['title'])) {
+        //     self::setTitle($this->additionalData['title']);
+        // }
 
-        if(is_array($this->additionalData['description'])) {
-            self::setDescription($this->additionalData['description']);
-        }
+        // if(is_array($this->additionalData['description'])) {
+        //     self::setDescription($this->additionalData['description']);
+        // }
+
+        $cacheManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager');
+        $cache = $cacheManager->getCache('hhseo_meta');
+        $cacheData = $cache->get('meta_'.$this->currentPageUid);
 
         if(!empty($metaTag)) {
             ksort($metaTag);
@@ -292,7 +305,12 @@ class PageDataHook {
             // output to HTML
             $result = $tags->render() . $newData;
             array_unshift($parameters['headerData'], $result);
+
+            // set DB cache
+            $cache->set('meta_'.$this->currentPageUid, $result, ['meta', 'meta-tags'], 0);
         }
+
+        array_unshift($parameters['headerData'], $cacheData);
 
         $contentObjectRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::class);
         $htmlHead = $contentObjectRenderer->getData('levelfield : -1, html_head, slide');

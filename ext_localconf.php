@@ -2,20 +2,19 @@
 defined('TYPO3_MODE') || die();
 
 call_user_func(function() {
-    $extensionKey = "hh_seo";
-    // $vendor = "HauerHeinrich";
-    // $className = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($extensionKey);
+    $extensionKey = 'hh_seo';
+    $version = \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger(TYPO3_branch);
 
     // deactivate ext:seo Meta-Tag generation
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags'] = [];
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags'][] =
-        \TYPO3\CMS\Seo\HrefLang\HrefLangGenerator::class . '->generate';
+    if($version < \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger('10.3')) {
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags'][] =
+            \TYPO3\CMS\Seo\HrefLang\HrefLangGenerator::class . '->generate';
+    }
 
     if (TYPO3_MODE === 'FE') {
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php']['render-preProcess'][$extensionKey] =
             HauerHeinrich\HhSeo\Hooks\PageDataHook::class . '->addPageData';
-        // $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/index_ts.php']['preprocessRequest'][] =
-        //     HauerHeinrich\HhSeo\Hooks\TestHook::class . '->test';
     }
 
     $rootLineFields = &$GLOBALS["TYPO3_CONF_VARS"]["FE"]["addRootLineFields"];
@@ -24,4 +23,9 @@ call_user_func(function() {
 
     // Register 'hhseo' as global fluid namespace
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']['hhseo'] = ['HauerHeinrich\\HhSeo\\ViewHelpers'];
+
+    // Register custom cache
+    if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['hhseo_meta'])) {
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['hhseo_meta'] = [];
+    }
 });

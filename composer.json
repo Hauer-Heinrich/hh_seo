@@ -10,7 +10,7 @@
             "role": "Developer"
         }
     ],
-    "version": "0.1.0",
+    "version": "0.2.0",
     "license": ["GPL-2.0-or-later"],
     "keywords": ["TYPO3 CMS", "SEO", "Extension"],
     "replace": {
@@ -18,8 +18,8 @@
         "typo3-ter/hh-seo": "self.version"
     },
     "require": {
-        "typo3/cms-core": "^9.5.0 || ^9.5.99",
-        "typo3/cms-seo": "^9.5.0 || ^9.5.99"
+        "typo3/cms-core": "^9.5.0 || ^10.4.99",
+        "typo3/cms-seo": "^9.5.0 || ^10.4.99"
     },
     "autoload": {
         "psr-4": {
