@@ -311,9 +311,9 @@ class PageDataHook {
 
             // set DB cache
             $cache->set('meta_'.$this->currentPageUid, $result, ['meta', 'meta-tags'], 0);
+        } else {
+            array_unshift($parameters['headerData'], $cacheData);
         }
-
-        array_unshift($parameters['headerData'], $cacheData);
 
         $contentObjectRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::class);
         $htmlHead = $contentObjectRenderer->getData('levelfield : -1, html_head, slide');
