@@ -203,6 +203,11 @@ class PageDataHook {
                 }
             }
 
+            $tags->twitter('card', 'summary');
+            if ($fluidData['twitter:card']) {
+                $tags->twitter('card', $fluidData['twitter:card']);
+            }
+
             if($fluidData['twitter:title']) {
                 $tags->twitter('title', $fluidData['twitter:title']);
             }
