@@ -63,13 +63,6 @@ class PageDataHook {
     protected $url;
 
     /**
-     * imageService
-     *
-     * @var TYPO3\\CMS\\Extbase\\Service\\ImageService
-     */
-    protected $imageService;
-
-    /**
      * currentPageUid
      *
      * @var int
@@ -77,24 +70,9 @@ class PageDataHook {
     protected $currentPageUid;
 
     public function __construct() {
-        $objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\Extbase\\Object\\ObjectManager');
-        $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
-        $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-
         $this->currentPageUid = $GLOBALS['TSFE']->id;
-
-        $this->pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-        $this->typoScriptFrontendController = $GLOBALS['TSFE'] ?? GeneralUtility::makeInstance(TypoScriptFrontendController::class);
-        $this->pageRepository = GeneralUtility::makeInstance(PageRepository::class);
-
-        $this->pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'];
         $this->additionalData = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'];
-        $this->imageService = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Service\\ImageService');
-
-        $request = $GLOBALS['TYPO3_REQUEST'];
-        $this->url = rtrim($request->getUri()->getScheme() . '://' . $request->getUri()->getHost(), '/');
-
-        $this->currentPageProperties = $this->pageRepository->getPage($this->typoScriptFrontendController->getRequestedId());
+        $this->pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
     }
 
     /**
@@ -168,6 +146,19 @@ class PageDataHook {
             $newData = '';
 
             $tags = new MetaTags;
+            $resourceFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
+            $objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\Extbase\\Object\\ObjectManager');
+            $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
+            $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+            $this->pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'];
+
+            $this->typoScriptFrontendController = $GLOBALS['TSFE'] ?? GeneralUtility::makeInstance(TypoScriptFrontendController::class);
+            $this->pageRepository = GeneralUtility::makeInstance(PageRepository::class);
+
+            $request = $GLOBALS['TYPO3_REQUEST'];
+            $this->url = rtrim($request->getUri()->getScheme() . '://' . $request->getUri()->getHost(), '/');
+
+            $this->currentPageProperties = $this->pageRepository->getPage($this->typoScriptFrontendController->getRequestedId());
 
             if($fluidData['title']) {
                 $separateBefore = str_replace('&nbsp;', ' ', $fluidData['titleSeparateBefore'] ? $fluidData['titleSeparateBefore'] : $fluidData['titleSeparate']);
@@ -197,16 +188,18 @@ class PageDataHook {
             }
 
             if($fluidData['og:image']) {
-                // $image = $this->imageService->getImage($fluidData['og:image'], null, false);
-                // $test = $this->imageService->getCompatibilityImageResourceValues($image);
-                // DebuggerUtility::var_dump($image->getProperty('width'));
-
                 if(is_array($fluidData['og:image'])) {
                     foreach ($fluidData['og:image'] as $key => $value) {
-                        $tags->og('image', $this->url . '/'. ltrim($value, '/'));
+                        $file = $resourceFactory->getFileObjectFromCombinedIdentifier($value);
+                        $tags->og('image', $this->url . '/'. $file->getPublicUrl());
+                        $tags->og('image:width', $file->getProperty('width'));
+                        $tags->og('image:width', $file->getProperty('height'));
                     }
                 } else {
-                    $tags->og('image', $this->url . '/'. ltrim($fluidData['og:image'], '/'));
+                    $file = $resourceFactory->getFileObjectFromCombinedIdentifier($fluidData['og:image']);
+                    $tags->og('image', $this->url . '/'. $file->getPublicUrl());
+                    $tags->og('image:width', $file->getProperty('width'));
+                    $tags->og('image:width', $file->getProperty('height'));
                 }
             }
 
@@ -221,21 +214,22 @@ class PageDataHook {
             if($fluidData['twitter:image']) {
                 if(is_array($fluidData['twitter:image'])) {
                     foreach ($fluidData['twitter:image'] as $key => $value) {
-                        $tags->twitter('image', $this->url . '/'. ltrim($value, '/'));
+                        $file = $resourceFactory->getFileObjectFromCombinedIdentifier($fluidData['og:image']);
+                        $tags->twitter('image', $this->url . '/'. $file->getPublicUrl());
                     }
                 } else {
-                    $tags->twitter('image', $this->url . '/'. ltrim($fluidData['twitter:image'], '/'));
+                    $file = $resourceFactory->getFileObjectFromCombinedIdentifier($fluidData['og:image']);
+                    $tags->twitter('image', $this->url . '/'. $file->getPublicUrl());
                 }
             }
 
             if($fluidData['shortcutIcon']) {
-                $image = $this->imageService->getImage($fluidData['shortcutIcon'], null, false);
-                $imageUri = $this->imageService->getImageUri($image);
-                $tags->link('shortcut icon', $imageUri);
+                $image = $resourceFactory->getFileObjectFromCombinedIdentifier($fluidData['shortcutIcon']);
+                $tags->link('shortcut icon', $this->url . '/'. $image->getPublicUrl());
             }
 
             if ($fluidData['touchIcon']) {
-                $newData .= $this->setTouchIcons($fluidData['touchIcon']);
+                $newData .= $this->setTouchIcons($resourceFactory, $fluidData['touchIcon']);
             }
 
             if ($fluidData['format-detection'] === 'false') {
@@ -334,12 +328,12 @@ class PageDataHook {
      * Generate touchicon meta-tags
      *
      * @param string $iconPath Icon file path
-     *
      * @return string
      */
-    public function setTouchIcons($iconPath): string {
+    public function setTouchIcons(string $iconPath): string {
         $touchIcons = '';
-        $image = $this->imageService->getImage($iconPath, null, false);
+        $imageService = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Service\\ImageService');
+        $image = $imageService->getImage($iconPath, null, false);
 
         $processingInstructions = [
             // Apple
@@ -428,8 +422,8 @@ class PageDataHook {
         foreach ($processingInstructions as $key => $value) {
             $tag = $value['tag'];
             foreach ($value['sizes'] as $sizesKey => $sizesValue) {
-                $processedImage = $this->imageService->applyProcessingInstructions($image, $sizesValue);
-                $imageUri = $this->imageService->getImageUri($processedImage);
+                $processedImage = $imageService->applyProcessingInstructions($image, $sizesValue);
+                $imageUri = $imageService->getImageUri($processedImage);
                 $touchIcons .= sprintf($tag, $sizesValue['width'], $sizesValue['height'], $imageUri);
             }
         }
