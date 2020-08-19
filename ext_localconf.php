@@ -7,6 +7,7 @@ call_user_func(function() {
 
     // deactivate ext:seo Meta-Tag generation
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags'] = [];
+    // below TYPO3 10
     if($version < \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger('10.3')) {
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags'][] =
             \TYPO3\CMS\Seo\HrefLang\HrefLangGenerator::class . '->generate';
@@ -17,7 +18,7 @@ call_user_func(function() {
             HauerHeinrich\HhSeo\Hooks\PageDataHook::class . '->addPageData';
     }
 
-    $rootLineFields = &$GLOBALS["TYPO3_CONF_VARS"]["FE"]["addRootLineFields"];
+    $rootLineFields = &$GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'];
     if (trim($rootLineFields) != "") $rootLineFields .= ',';
     $rootLineFields .= 'html_head,html_body_top,html_body_bottom,geo_region,geo_placename,geo_position_long,geo_position_lat,og_image,twitter_image';
 
