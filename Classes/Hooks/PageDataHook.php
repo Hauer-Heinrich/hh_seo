@@ -301,6 +301,10 @@ class PageDataHook {
                 $newData .= $canonicalGenerator->generate();
             }
 
+            if (!empty($fluidData['jsonld'])) {
+                $tags->jsonld($fluidData['jsonld']);
+            }
+
             // output to HTML
             $result = $tags->render() . $newData;
             array_unshift($parameters['headerData'], $result);
