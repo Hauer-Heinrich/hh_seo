@@ -234,7 +234,7 @@ class PageDataHook {
             }
 
             if ($fluidData['touchIcon']) {
-                $newData .= $this->setTouchIcons($resourceFactory, $fluidData['touchIcon']);
+                $newData .= $this->setTouchIcons($fluidData['touchIcon']);
             }
 
             if ($fluidData['format-detection'] === 'false') {

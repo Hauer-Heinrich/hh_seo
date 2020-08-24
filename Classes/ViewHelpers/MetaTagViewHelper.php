@@ -31,8 +31,6 @@ namespace HauerHeinrich\HhSeo\ViewHelpers;
  */
 
 // use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
-
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use function GuzzleHttp\json_decode;

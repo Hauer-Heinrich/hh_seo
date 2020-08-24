@@ -13,10 +13,8 @@ call_user_func(function() {
             \TYPO3\CMS\Seo\HrefLang\HrefLangGenerator::class . '->generate';
     }
 
-    if (TYPO3_MODE === 'FE') {
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php']['render-preProcess'][$extensionKey] =
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php']['render-preProcess'][$extensionKey] =
             HauerHeinrich\HhSeo\Hooks\PageDataHook::class . '->addPageData';
-    }
 
     $rootLineFields = &$GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'];
     if (trim($rootLineFields) != "") $rootLineFields .= ',';
