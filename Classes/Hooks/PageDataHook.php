@@ -293,6 +293,10 @@ class PageDataHook {
                 $tags->meta('copyright', $fluidData['copyright']);
             }
 
+            if($fluidData['designer']) {
+                $tags->meta('designer', $fluidData['designer']);
+            }
+
             // set canonical path-string if set, for slot
             $canonicalGenerator = GeneralUtility::makeInstance(CanonicalGenerator::class);
             if(!empty($fluidData['canonical'])) {
