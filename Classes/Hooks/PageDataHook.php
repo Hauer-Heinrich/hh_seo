@@ -219,11 +219,11 @@ class PageDataHook {
             if($fluidData['twitter:image']) {
                 if(is_array($fluidData['twitter:image'])) {
                     foreach ($fluidData['twitter:image'] as $key => $value) {
-                        $file = $resourceFactory->getFileObjectFromCombinedIdentifier($fluidData['og:image']);
+                        $file = $resourceFactory->getFileObjectFromCombinedIdentifier($value);
                         $tags->twitter('image', $this->url . '/'. $file->getPublicUrl());
                     }
                 } else {
-                    $file = $resourceFactory->getFileObjectFromCombinedIdentifier($fluidData['og:image']);
+                    $file = $resourceFactory->getFileObjectFromCombinedIdentifier($fluidData['twitter:image']);
                     $tags->twitter('image', $this->url . '/'. $file->getPublicUrl());
                 }
             }
@@ -287,6 +287,9 @@ class PageDataHook {
             // Author
             if($fluidData['author']) {
                 $tags->meta('author', $fluidData['author']);
+            }
+            if($fluidData['link:author']) {
+                $tags->link('author', $fluidData['link:author']);
             }
 
             if($fluidData['copyright']) {
