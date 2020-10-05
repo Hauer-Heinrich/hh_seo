@@ -191,20 +191,16 @@ class PageDataHook {
             if($ogImage) {
                 if(is_array($ogImage)) {
                     foreach ($ogImage as $key => $value) {
-                        if(file_exists($ogImage)) {
-                            $file = $resourceFactory->getFileObjectFromCombinedIdentifier($value);
-                            $tags->og('image', $this->url . '/'. $file->getPublicUrl());
-                            $tags->og('image:width', $file->getProperty('width'));
-                            $tags->og('image:width', $file->getProperty('height'));
-                        }
-                    }
-                } else {
-                    if(file_exists($ogImage)) {
-                        $file = $resourceFactory->getFileObjectFromCombinedIdentifier($ogImage);
+                        $file = $resourceFactory->getFileObjectFromCombinedIdentifier($value);
                         $tags->og('image', $this->url . '/'. $file->getPublicUrl());
                         $tags->og('image:width', $file->getProperty('width'));
                         $tags->og('image:width', $file->getProperty('height'));
                     }
+                } else {
+                    $file = $resourceFactory->getFileObjectFromCombinedIdentifier($ogImage);
+                    $tags->og('image', $this->url . '/'. $file->getPublicUrl());
+                    $tags->og('image:width', $file->getProperty('width'));
+                    $tags->og('image:width', $file->getProperty('height'));
                 }
             }
 
