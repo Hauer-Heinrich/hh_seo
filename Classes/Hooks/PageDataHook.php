@@ -187,19 +187,24 @@ class PageDataHook {
                 $tags->og('description', $fluidData['og:description']);
             }
 
-            if($fluidData['og:image']) {
-                if(is_array($fluidData['og:image'])) {
-                    foreach ($fluidData['og:image'] as $key => $value) {
-                        $file = $resourceFactory->getFileObjectFromCombinedIdentifier($value);
+            $ogImage = $fluidData['og:image'];
+            if($ogImage) {
+                if(is_array($ogImage)) {
+                    foreach ($ogImage as $key => $value) {
+                        if(file_exists($ogImage)) {
+                            $file = $resourceFactory->getFileObjectFromCombinedIdentifier($value);
+                            $tags->og('image', $this->url . '/'. $file->getPublicUrl());
+                            $tags->og('image:width', $file->getProperty('width'));
+                            $tags->og('image:width', $file->getProperty('height'));
+                        }
+                    }
+                } else {
+                    if(file_exists($ogImage)) {
+                        $file = $resourceFactory->getFileObjectFromCombinedIdentifier($ogImage);
                         $tags->og('image', $this->url . '/'. $file->getPublicUrl());
                         $tags->og('image:width', $file->getProperty('width'));
                         $tags->og('image:width', $file->getProperty('height'));
                     }
-                } else {
-                    $file = $resourceFactory->getFileObjectFromCombinedIdentifier($fluidData['og:image']);
-                    $tags->og('image', $this->url . '/'. $file->getPublicUrl());
-                    $tags->og('image:width', $file->getProperty('width'));
-                    $tags->og('image:width', $file->getProperty('height'));
                 }
             }
 
@@ -216,25 +221,28 @@ class PageDataHook {
                 $tags->twitter('description', $fluidData['twitter:description']);
             }
 
-            if($fluidData['twitter:image']) {
-                if(is_array($fluidData['twitter:image'])) {
-                    foreach ($fluidData['twitter:image'] as $key => $value) {
+            $twitterImage = $fluidData['twitter:image'];
+            if($twitterImage) {
+                if(is_array($twitterImage)) {
+                    foreach ($twitterImage as $key => $value) {
                         $file = $resourceFactory->getFileObjectFromCombinedIdentifier($value);
                         $tags->twitter('image', $this->url . '/'. $file->getPublicUrl());
                     }
                 } else {
-                    $file = $resourceFactory->getFileObjectFromCombinedIdentifier($fluidData['twitter:image']);
+                    $file = $resourceFactory->getFileObjectFromCombinedIdentifier($twitterImage);
                     $tags->twitter('image', $this->url . '/'. $file->getPublicUrl());
                 }
             }
 
-            if($fluidData['shortcutIcon']) {
-                $image = $resourceFactory->getFileObjectFromCombinedIdentifier($fluidData['shortcutIcon']);
+            $shortcutIcon = $fluidData['shortcutIcon'];
+            if($shortcutIcon) {
+                $image = $resourceFactory->getFileObjectFromCombinedIdentifier($shortcutIcon);
                 $tags->link('shortcut icon', $this->url . '/'. $image->getPublicUrl());
             }
 
-            if ($fluidData['touchIcon']) {
-                $newData .= $this->setTouchIcons($fluidData['touchIcon']);
+            $touchIcon = $fluidData['touchIcon'];
+            if ($touchIcon && file_exists($touchIcon)) {
+                $newData .= $this->setTouchIcons($touchIcon);
             }
 
             if ($fluidData['format-detection'] === 'false') {
