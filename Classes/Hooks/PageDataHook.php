@@ -483,7 +483,9 @@ class PageDataHook {
      */
     public function setHTMLCodeBodyTop($data) {
         $bodyContent = $this->pageRenderer->getBodyContent();
-        $this->pageRenderer->setBodyContent(substr_replace($bodyContent, $data, 1+strpos($bodyContent, '>'), 0));
+        if(!empty($bodyContent)) {
+            $this->pageRenderer->setBodyContent(substr_replace($bodyContent, $data, 1+strpos($bodyContent, '>'), 0));
+        }
     }
 
     /**
