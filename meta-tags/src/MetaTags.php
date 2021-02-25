@@ -109,7 +109,11 @@ class MetaTags
                 'content' => $value
             ]);
 
-            $this->addToTagsGroup('og', $key, $tag);
+            if($key === 'og:image:width' || $key === 'og:image:height') {
+                $this->addToTagsGroup('og', 'og:image', $tag);
+            } else {
+                $this->addToTagsGroup('og', $key, $tag);
+            }
 
             return $tag;
         }
@@ -175,7 +179,11 @@ class MetaTags
                 'content' => $value
             ]);
 
-            $this->addToTagsGroup('twitter', $key, $tag);
+            if($key === 'twitter:image:width' || $key === 'twitter:image:height') {
+                $this->addToTagsGroup('twitter', 'twitter:image', $tag);
+            } else {
+                $this->addToTagsGroup('twitter', $key, $tag);
+            }
 
             return $tag;
         }

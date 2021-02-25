@@ -190,17 +190,17 @@ class PageDataHook {
             $ogImage = $fluidData['og:image'];
             if($ogImage) {
                 if(is_array($ogImage)) {
-                    foreach ($ogImage as $key => $value) {
+                    foreach ($ogImage as $value) {
                         $file = $resourceFactory->getFileObjectFromCombinedIdentifier($value);
                         $tags->og('image', $this->url . '/'. $file->getPublicUrl());
                         $tags->og('image:width', $file->getProperty('width'));
-                        $tags->og('image:width', $file->getProperty('height'));
+                        $tags->og('image:height', $file->getProperty('height'));
                     }
                 } else {
                     $file = $resourceFactory->getFileObjectFromCombinedIdentifier($ogImage);
                     $tags->og('image', $this->url . '/'. $file->getPublicUrl());
                     $tags->og('image:width', $file->getProperty('width'));
-                    $tags->og('image:width', $file->getProperty('height'));
+                    $tags->og('image:height', $file->getProperty('height'));
                 }
             }
 
