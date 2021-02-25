@@ -24,7 +24,7 @@ namespace HauerHeinrich\HhSeo\ViewHelpers;
  * This copyright notice MUST APPEAR in all copies of the script!
  * Example
  * <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
- *   xmlns:seo="http://typo3.org/ns/VENDOR/NAMESPACE/ViewHelpers"
+ *   xmlns:seo="http://typo3.org/ns/HauerHeinrich/HhSeo/ViewHelpers"
  *   data-namespace-typo3-fluid="true">
  *
  *  EXAMPLE: Resources/Private/Templates/Example.html
