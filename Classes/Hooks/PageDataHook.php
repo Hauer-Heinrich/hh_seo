@@ -221,7 +221,7 @@ class PageDataHook {
             $twitterImage = $fluidData['twitter:image'];
             if($twitterImage) {
                 if(is_array($twitterImage)) {
-                    foreach ($twitterImage as $key => $value) {
+                    foreach ($twitterImage as $value) {
                         $file = $resourceFactory->getFileObjectFromCombinedIdentifier($value);
                         $tags->twitter('image', $this->url . '/'. $file->getPublicUrl());
                     }
