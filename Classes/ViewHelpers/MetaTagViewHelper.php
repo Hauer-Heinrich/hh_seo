@@ -33,7 +33,6 @@ namespace HauerHeinrich\HhSeo\ViewHelpers;
 // use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
-use function GuzzleHttp\json_decode;
 
 class MetaTagViewHelper extends AbstractViewHelper {
 
@@ -78,7 +77,7 @@ class MetaTagViewHelper extends AbstractViewHelper {
     }
 
     function registerArguments(Array $registers){
-        foreach($registers as $registerKey => $registerVal){
+        foreach($registers as $registerVal){
             $this->registerArgument(...$registerVal);
         }
     }
@@ -97,9 +96,7 @@ class MetaTagViewHelper extends AbstractViewHelper {
         $renderChildren = $renderChildrenClosure();
 
         if(!empty(trim($renderChildren))) {
-            $preg = "\\x00-\\x20"; // for control characters and whitespaces and so on
-            $data = strip_tags(trim(preg_replace( "/[".$preg."]+/" , ' ' , $renderChildren ) , $preg));
-            $childData[$dataType] = reset(json_decode($data, true));
+            $childData[$dataType] = parse_ini_string($renderChildren, true, INI_SCANNER_RAW);
             $childData['overwrite'] = $arguments['overwrite'];
         }
 

@@ -2,65 +2,55 @@
     xmlns:seo="http://typo3.org/ns/HauerHeinrich/HhSeo/ViewHelpers"
     data-namespace-typo3-fluid="true">
 
+<f:comment>
+    Example for multiple og:images and single twitter image.
+
+    KEY "[custom]" is requierd for custom meta-tags
+</f:comment>
+
 <seo:metaTag order="0">
-    [{
-        <f:comment></f:comment>
-        "title": "{data.title}",
-        "titleBefore": "{hhSeo.titleBefore}",
-        "titleAfter": "{hhSeo.titleAfter}",
-        "titleSeparate": "{hhSeo.titleSeparate}",
-        "titleSeparateBefore": "{hhSeo.titleSeparateBefore}",
-        "titleSeparateAfter": "{hhSeo.titleSeparateAfter}",
+title = {data.title}
+titleBefore = {hhSeo.titleBefore}
+titleAfter = {hhSeo.titleAfter}
+titleSeparate = "{hhSeo.titleSeparate}"
+titleSeparateBefore = "{hhSeo.titleSeparateBefore}"
+titleSeparateAfter = "{hhSeo.titleSeparateAfter}"
 
-        "description": "<seo:formatJson data="{data.description}" />",
+description = <seo:formatIni data="{data.description}" />
 
-        "designer": "{hhSeo.designer}",
-        "theme-color": "{hhSeo.themeColor }",
-        "shortcutIcon": "{hhSeo.shortcutIcon}",
-        "touchIcon": "{hhSeo.touchIcon}",
-        "format-detection": "{hhSeo.formatDetection}",
-        "last-modified": "{data.SYS_LASTCHANGED}",
+designer = {hhSeo.designer}
+theme-color = {hhSeo.themeColor }
+shortcutIcon = {hhSeo.shortcutIcon}
+touchIcon = {hhSeo.touchIcon}
+format-detection = {hhSeo.formatDetection}
+last-modified = {data.SYS_LASTCHANGED}
+author = {hhSeo.author}
 
-        "author": "{hhSeo.author}",
+robots:index = {f:if(condition: '{data.no_index}', then: 'noindex')}
+robots:follow = {f:if(condition: '{data.no_follow}', then: 'nofollow')}
 
-        "robots:index": "{f:if(condition: '{data.no_index}', then: 'noindex')}",
-        "robots:follow": "{f:if(condition: '{data.no_follow}', then: 'nofollow')}",
+og:title = {data.og_title}
+og:description = <seo:formatIni data="{data.og_description}" />
+<f:if condition="{og_image->f:count()} > 0">
+    <f:for each="{og_image}" as="image" iteration="i">
+        og:image[] = {f:uri.image(src: '{image.uid}', treatIdAsReference: 1)}
+    </f:for>
+</f:if>
 
-        "og:title": "{data.og_title}",
-        "og:description": "{data.og_description}",
-        "og:image": {
-            <f:if condition="{og_image->f:count()} > 0">
-                <f:for each="{og_image}" as="image" iteration="i">
-                    "{i.index}": "{f:uri.image(src: '{image.uid}', treatIdAsReference: 1)}"
-                    <f:if condition="{i.isLast} == false">
-                        ,
-                    </f:if>
-                </f:for>
-            </f:if>
-        },
+twitter:title = {data.twitter_title}
+twitter:description = <seo:formatIni data="{data.twitter_description}" />
+twitter:image[] = <f:if condition="{twitter_image.0}">{f:uri.image(src: '{twitter_image.0.uid}', treatIdAsReference: 1)}</f:if>
 
-        "twitter:title": "{data.twitter_title}",
-        "twitter:description": "{data.twitter_description}",
-        "twitter:image": "<f:if condition="{twitter_image.0}">{f:uri.image(src: '{twitter_image.0.uid}', treatIdAsReference: 1)}</f:if>",
+geo:region = {hhSeo_slide_geoRegion}
+geo:placename = {hhSeo_slide_geoPlacename}
+geo:position:long = {hhSeo_slide_geoPositionLong}
+geo:position:lat = {hhSeo_slide_geoPositionLat}
 
-        "geo:region": "{hhSeo_slide_geoRegion}",
-        "geo:placename": "{hhSeo_slide_geoPlacename}",
-        "geo:position:long": "{hhSeo_slide_geoPositionLong}",
-        "geo:position:lat": "{hhSeo_slide_geoPositionLat}",
+canonical = {data.canonical_link}
 
-        "canonical": "{data.canonical_link}",
-
-        "jsonld": [{
-            "@context": "http://schema.org",
-            "@type": "Person",
-            "name": "Pedro Borges"
-        }],
-
-        "custom": {
-            "myCustomKey": "meta content='myCustomMetaTag'",
-            "otherCustomKey": "meta http-equiv='Content-Type' content='...;' charset='...' /"
-        }
-    }]
+[custom]
+myCustomKey = "meta content='myCustomMetaTag' name='test'"
+otherCustomKey = "meta content='blubb ' name='test 222' /"
 </seo:metaTag>
 
 </html>

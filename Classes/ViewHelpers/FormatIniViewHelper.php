@@ -38,12 +38,12 @@ class FormatIniViewHelper extends AbstractViewHelper {
 
     public function initializeArguments() {
         $this->registerArguments([
-            ['data', 'string', 'String', true]
+            ['data', 'string', 'String', false]
         ]);
     }
 
     function registerArguments(Array $registers){
-        foreach($registers as $registerKey => $registerVal){
+        foreach($registers as $registerVal){
             $this->registerArgument(...$registerVal);
         }
     }
@@ -60,12 +60,13 @@ class FormatIniViewHelper extends AbstractViewHelper {
      * @return string
      */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
-        $formated = str_replace(["\r\n", "\n", "\r"], '', $arguments['data']);
+        $renderChildren = $renderChildrenClosure() ? trim($renderChildrenClosure()) : $arguments['data'];
+        $formated = str_replace(["\r\n", "\n", "\r"], '', $renderChildren);
 
-        $stringReplace = ['"', "'",'´', '´', '<', '>'];
-        $stringReplaceWidth = ['\"', '', '', '', '', ''];
-        $result = trim(str_replace($stringReplace, $stringReplaceWidth, $formated));
+        // $stringReplace = ['"', "'",'´', '´', '<', '>'];
+        // $stringReplaceWidth = ['\"', '', '', '', '', ''];
+        // $result = trim(str_replace($stringReplace, $stringReplaceWidth, $formated));
 
-        return $result;
+        return $formated;
     }
 }

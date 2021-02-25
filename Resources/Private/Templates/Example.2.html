@@ -8,17 +8,7 @@
 </f:comment>
 
 <hhs:metaTag order="10" overwrite="true">
-[{
-    <f:comment></f:comment>
-    <f:if condition="{myExtData.myExtValue_seoDescription}">
-        <f:then>
-            "description": "<f:format.crop maxCharacters="180" respectWordBoundaries="1" respectHtml="0">{myExtData.myExtValue_seoDescription}</f:format.crop>",
-        </f:then>
-        <f:else>
-            "description": "<f:format.crop maxCharacters="180" respectWordBoundaries="1" respectHtml="0">{data.description}</f:format.crop>",
-        </f:else>
-    </f:if>
-}]
+description = <seo:formatIni><f:format.crop maxCharacters="180" respectWordBoundaries="1" respectHtml="0">{data.description}</f:format.crop></seo:formatIni>
 </hhs:metaTag>
 
 </html>
