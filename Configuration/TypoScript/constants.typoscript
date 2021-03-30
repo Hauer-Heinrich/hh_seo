@@ -16,7 +16,7 @@ plugin.tx_hhseo {
         #cat=plugin.tx_hhseo_title/page/0200; type=string; label= after meta-title
             afterMetaTitle =
         #cat=plugin.tx_hhseo_title/page/0300; type=string; label= default meta-title-separate
-            titleSeparate =
+            titleSeparate = &nbsp;-&nbsp;
         #cat=plugin.tx_hhseo_title/page/0400; type=string; label= meta-title-separate before
             titleSeparateBefore =
         #cat=plugin.tx_hhseo_title/page/0500; type=string; label= meta-title-separate after
