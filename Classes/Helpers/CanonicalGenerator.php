@@ -1,7 +1,5 @@
 <?php
-declare(strict_types = 1);
-
-namespace HauerHeinrich\HhSeo\Helpers;
+declare(strict_types=1);
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -16,10 +14,14 @@ namespace HauerHeinrich\HhSeo\Helpers;
  * The TYPO3 project - inspiring people to share!
  */
 
+namespace TYPO3\CMS\Seo\Canonical;
+
+use Psr\EventDispatcher\EventDispatcherInterface;
+use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
-use TYPO3\CMS\Frontend\Page\PageRepository;
 use TYPO3\CMS\Frontend\Utility\CanonicalizationUtility;
+use TYPO3\CMS\Seo\Event\ModifyUrlForCanonicalTagEvent;
 
 /**
  * Class to add the canonical tag to the page
@@ -39,25 +41,21 @@ class CanonicalGenerator
     protected $pageRepository;
 
     /**
-     * CanonicalGenerator constructor
-     *
-     * @param TypoScriptFrontendController $typoScriptFrontendController
+     * @var EventDispatcherInterface
      */
-    public function __construct(TypoScriptFrontendController $typoScriptFrontendController = null) {
-        if ($typoScriptFrontendController === null) {
-            $typoScriptFrontendController = $this->getTypoScriptFrontendController();
-        }
+    protected $eventDispatcher;
 
-        $this->typoScriptFrontendController = $typoScriptFrontendController;
+    public function __construct(TypoScriptFrontendController $typoScriptFrontendController = null, EventDispatcherInterface $eventDispatcher = null)
+    {
+        $this->eventDispatcher = $eventDispatcher ?? GeneralUtility::getContainer()->get(EventDispatcherInterface::class);
+        $this->typoScriptFrontendController = $typoScriptFrontendController ?? $this->getTypoScriptFrontendController();
         $this->pageRepository = GeneralUtility::makeInstance(PageRepository::class);
     }
 
-    /**
-     * @return string
-     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
-     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
-     */
-    public function generate($href = ''): string {
+    public function generate(): string
+    {
+        $event = $this->eventDispatcher->dispatch(new ModifyUrlForCanonicalTagEvent(''));
+        $href = $event->getUrl();
 
         if (empty($href) && (int)$this->typoScriptFrontendController->page['no_index'] === 1) {
             return '';

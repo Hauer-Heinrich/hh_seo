@@ -6,7 +6,7 @@ namespace HauerHeinrich\HhSeo\Hooks;
 // use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use \TYPO3\CMS\Core\Page\PageRenderer;
-use \TYPO3\CMS\Frontend\Page\PageRepository;
+use \TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use PedroBorges\MetaTags\MetaTags;
 use HauerHeinrich\HhSeo\Helpers\CanonicalGenerator;
@@ -30,7 +30,7 @@ class PageDataHook {
     /**
      * pageRepository
      *
-     * @var TYPO3\\CMS\\Frontend\\Page\\PageRepository
+     * @var TYPO3\\CMS\\Core\\Domain\\Repository\\PageRepository
      */
     protected $pageRepository;
 
@@ -146,7 +146,7 @@ class PageDataHook {
             $newData = '';
 
             $tags = new MetaTags;
-            $resourceFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
+            $resourceFactory = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
             $objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\Extbase\\Object\\ObjectManager');
             $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
             $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
