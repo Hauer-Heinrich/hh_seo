@@ -5,7 +5,7 @@ call_user_func(function() {
     $extensionKey = 'hh_seo';
 
     $typo3version = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Information\Typo3Version::class);
-    $version = $typo3version->getVersion();
+    $version = \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger($typo3version->getVersion());
 
     // deactivate ext:seo Meta-Tag generation
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags'] = [];
