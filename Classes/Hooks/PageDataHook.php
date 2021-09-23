@@ -6,7 +6,7 @@ namespace HauerHeinrich\HhSeo\Hooks;
 // use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use \TYPO3\CMS\Core\Page\PageRenderer;
-use \TYPO3\CMS\Core\Domain\Repository\PageRepository;
+use PageRepository;
 use \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use PedroBorges\MetaTags\MetaTags;
 use HauerHeinrich\HhSeo\Helpers\CanonicalGenerator;
@@ -30,7 +30,7 @@ class PageDataHook {
     /**
      * pageRepository
      *
-     * @var TYPO3\\CMS\\Core\\Domain\\Repository\\PageRepository
+     * @var PageRepository
      */
     protected $pageRepository;
 
@@ -100,7 +100,10 @@ class PageDataHook {
      * @param array $parameters
      * @return string
     */
-    public function addPageData(&$parameters) {
+    public function addPageData(&$parameters = null) {
+        if(empty($this->additionalData)) {
+            return '';
+        }
         $metaTag = $this->additionalData['MetaTag'];
 
         // TODO: make all meta-tags available as single viewhelper
@@ -319,12 +322,12 @@ class PageDataHook {
 
             // output to HTML
             $result = $tags->render() . $newData;
-            array_unshift($parameters['headerData'], $result);
+            $this->setHTMLCodeHead($result);
 
             // set DB cache
             $cache->set('meta_'.$this->currentPageUid, $result, ['meta', 'meta-tags'], 0);
         } else {
-            array_unshift($parameters['headerData'], $cacheData);
+            $this->setHTMLCodeHead($cacheData);
         }
 
         $contentObjectRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::class);

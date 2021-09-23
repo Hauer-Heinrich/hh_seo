@@ -15,8 +15,23 @@ call_user_func(function() {
             \TYPO3\CMS\Seo\HrefLang\HrefLangGenerator::class . '->generate';
     }
 
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php']['render-preProcess'][$extensionKey] =
-            HauerHeinrich\HhSeo\Hooks\PageDataHook::class . '->addPageData';
+    if (class_exists('\\TYPO3\\CMS\\Core\\Domain\\Repository\\PageRepository', true)) {
+        class_alias('\\TYPO3\\CMS\\Core\\Domain\\Repository\\PageRepository', 'PageRepository');
+    } else {
+        class_alias('\\TYPO3\\CMS\\Frontend\\Page\\PageRepository', 'PageRepository');
+    }
+
+    // $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php']['render-preProcess'][$extensionKey] =
+    //     \HauerHeinrich\HhSeo\Hooks\PageDataHook::class . '->addPageData';
+    // $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php']['render-postProcess'][$extensionKey] =
+    //     \HauerHeinrich\HhSeo\Hooks\PageDataHook::class . '->addPageData';
+    // $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-output'][$extensionKey] =
+    //     \HauerHeinrich\HhSeo\Hooks\PageDataHook::class . '->addPageData';
+    // $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-all'][$extensionKey] =
+    //     \HauerHeinrich\HhSeo\Hooks\PageDataHook::class . '->addPageData';
+
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags']['metatag'] =
+        \HauerHeinrich\HhSeo\Hooks\PageDataHook::class . '->addPageData';
 
     $rootLineFields = &$GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'];
     if (trim($rootLineFields) != "") $rootLineFields .= ',';
