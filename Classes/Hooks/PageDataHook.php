@@ -311,9 +311,9 @@ class PageDataHook {
             // set canonical path-string if set, for slot
             $canonicalGenerator = GeneralUtility::makeInstance(CanonicalGenerator::class);
             if(!empty($fluidData['canonical'])) {
-                $newData .= $canonicalGenerator->generate($fluidData['canonical']);
+                $canonicalGenerator->generate($fluidData['canonical']);
             } else {
-                $newData .= $canonicalGenerator->generate();
+                $canonicalGenerator->generate();
             }
 
             if (!empty($fluidData['jsonld'])) {

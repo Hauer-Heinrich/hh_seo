@@ -23,6 +23,7 @@ plugin.tx_seo {
 ################################################################
 config {
     noPageTitle = 2
+    disableCanonical = 0
 }
 
 page {
