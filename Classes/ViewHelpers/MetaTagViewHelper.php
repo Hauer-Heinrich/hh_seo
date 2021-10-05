@@ -46,6 +46,7 @@ class MetaTagViewHelper extends AbstractViewHelper {
             ['titleSeparate', 'string', 'Title seperator'],
             ['titleSeparateBefore', 'string', 'Title seperator before (overwrite titleSeparate)'],
             ['titleSeparateAfter', 'string', 'Title seperator after (overwrite titleSeparate)'],
+            ['keywords', 'string', 'Keywords-Tag'],
             ['description', 'string', 'Description-Tag'],
 
             ['designer', 'string', 'Designer'],

@@ -172,6 +172,10 @@ class PageDataHook {
                 $tags->title($title);
             }
 
+            if($fluidData['keywords']) {
+                $tags->meta('keywords', $fluidData['keywords']);
+            }
+
             if($fluidData['description']) {
                 $tags->meta('description', $fluidData['description']);
             }
