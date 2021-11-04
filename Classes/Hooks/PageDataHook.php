@@ -118,8 +118,11 @@ class PageDataHook {
         // }
 
         $cacheManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager');
-        $cache = $cacheManager->getCache('hhseo_meta');
-        $cacheData = $cache->get('meta_'.$this->currentPageUid);
+        $cacheData = '';
+        if($cacheManager->hasCache('hhseo_meta')) {
+            $cache = $cacheManager->getCache('hhseo_meta');
+            $cacheData = $cache->get('meta_'.$this->currentPageUid);
+        }
 
         if(!empty($metaTag)) {
             ksort($metaTag);
@@ -329,7 +332,9 @@ class PageDataHook {
             $this->setHTMLCodeHead($result);
 
             // set DB cache
-            $cache->set('meta_'.$this->currentPageUid, $result, ['meta', 'meta-tags'], 0);
+            if($cacheManager->hasCache('hhseo_meta')) {
+                $cache->set('meta_'.$this->currentPageUid, $result, ['meta', 'meta-tags'], 0);
+            }
         } else {
             $this->setHTMLCodeHead($cacheData);
         }
