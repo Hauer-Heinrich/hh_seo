@@ -21,11 +21,11 @@ $EM_CONF['hh_seo'] = [
     'uploadfolder' => '0',
     'createDirs' => '',
     'clearCacheOnLoad' => 0,
-    'version' => '0.3.3',
+    'version' => '0.4.0',
     'constraints' => [
         'depends' => [
-            'typo3' => '9.4.0-10.4.99',
-            'seo' => '9.4.0-10.4.99',
+            'typo3' => '^10.4.0',
+            'seo' => '^10.4.0',
         ],
         'conflicts' => [
         ],
