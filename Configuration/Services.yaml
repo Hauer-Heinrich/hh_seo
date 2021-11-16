@@ -1,0 +1,15 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  HauerHeinrich\HhSeo\:
+    resource: '../Classes/*'
+
+  HauerHeinrich\HhSeo\EventListener\EventModifyUrlForCanonicalTag:
+    tags:
+      - name: event.listener
+        identifier: 'hh-seo/ModifyUrlForCanonicalTag'
+        before: 'typo3-seo/hreflangGenerator'
+        event: TYPO3\CMS\Seo\Event\ModifyUrlForCanonicalTagEvent

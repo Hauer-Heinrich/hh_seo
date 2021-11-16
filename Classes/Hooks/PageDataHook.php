@@ -9,7 +9,6 @@ use \TYPO3\CMS\Core\Page\PageRenderer;
 use PageRepository;
 use \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use PedroBorges\MetaTags\MetaTags;
-use HauerHeinrich\HhSeo\Helpers\CanonicalGenerator;
 
 class PageDataHook {
 
@@ -39,35 +38,35 @@ class PageDataHook {
      *
      * @var array
      */
-    protected $currentPageProperties;
+    protected $currentPageProperties = [];
 
     /**
      * pluginSettings
      *
      * @var array
      */
-    protected $pluginSettings;
+    protected $pluginSettings = [];
 
     /**
      * additionalData
      *
      * @var array
      */
-    protected $additionalData;
+    protected $additionalData = [];
 
     /**
      * url
      *
      * @var string
      */
-    protected $url;
+    protected $url = '';
 
     /**
      * currentPageUid
      *
      * @var int
      */
-    protected $currentPageUid;
+    protected $currentPageUid = 0;
 
     public function __construct() {
         $this->currentPageUid = $GLOBALS['TSFE']->id;
@@ -313,14 +312,6 @@ class PageDataHook {
 
             if($fluidData['designer']) {
                 $tags->meta('designer', $fluidData['designer']);
-            }
-
-            // set canonical path-string if set, for slot
-            $canonicalGenerator = GeneralUtility::makeInstance(CanonicalGenerator::class);
-            if(!empty($fluidData['canonical'])) {
-                $canonicalGenerator->generate($fluidData['canonical']);
-            } else {
-                $canonicalGenerator->generate();
             }
 
             if (!empty($fluidData['jsonld'])) {

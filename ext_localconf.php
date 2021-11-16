@@ -8,12 +8,8 @@ call_user_func(function() {
     $version = \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger($typo3version->getVersion());
 
     // deactivate ext:seo Meta-Tag generation
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags'] = [];
-    // below TYPO3 10
-    if($version < \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger('10.3')) {
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags'][] =
-            \TYPO3\CMS\Seo\HrefLang\HrefLangGenerator::class . '->generate';
-    }
+    // $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags'] = [];
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags']['metatag'] = [];
 
     if (class_exists('\\TYPO3\\CMS\\Core\\Domain\\Repository\\PageRepository', true)) {
         class_alias('\\TYPO3\\CMS\\Core\\Domain\\Repository\\PageRepository', 'PageRepository');

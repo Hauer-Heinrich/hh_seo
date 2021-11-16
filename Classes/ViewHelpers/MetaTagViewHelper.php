@@ -36,7 +36,7 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 class MetaTagViewHelper extends AbstractViewHelper {
 
-    public function initializeArguments() {
+    public function initializeArguments(): void {
         $this->registerArguments([
             ['order', 'int', 'Ordering int', true],
             ['type', 'string', 'headerData or custom Data Type', false, 'headerData'],
@@ -77,8 +77,8 @@ class MetaTagViewHelper extends AbstractViewHelper {
         ]);
     }
 
-    function registerArguments(Array $registers){
-        foreach($registers as $registerVal){
+    function registerArguments(Array $registers): void {
+        foreach($registers as $registerVal) {
             $this->registerArgument(...$registerVal);
         }
     }
