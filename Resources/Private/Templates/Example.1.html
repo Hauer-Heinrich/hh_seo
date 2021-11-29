@@ -3,12 +3,19 @@
     data-namespace-typo3-fluid="true">
 
 <f:comment>
-    Example for multiple og:images and single twitter image.
+    ViewHelper attribute "order" (required):
+    - A higher "order" number overwrites lower ones.
+    - Example: use <seo:metaTag order="0">...</seo:metaTag> in your theme and EXT:news use a higher number e. g. <seo:metaTag order="10">...</seo:metaTag>
 
-    KEY "[custom]" is requierd for custom meta-tags
+    ViewHelper attribute "overwrite" (optional):
+    - If overwrite="true" is set, it overwrites all previous entries completely - otherwise it merges them (default = false).
+
+    - Example for multiple images see "og:images" and for single image see "twitter:image".
+    - KEY "[custom]" is requierd for custom meta-tags
+    - The writing style is like in php.ini
 </f:comment>
 
-<seo:metaTag order="0">
+<seo:metaTag order="0" overwrite="false">
 title = {data.title}
 titleBefore = {hhSeo.titleBefore}
 titleAfter = {hhSeo.titleAfter}

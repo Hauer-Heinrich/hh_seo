@@ -232,18 +232,18 @@ class PageDataHook {
                 if(is_array($twitterImage)) {
                     foreach ($twitterImage as $value) {
                         $file = $resourceFactory->getFileObjectFromCombinedIdentifier($value);
-                        $tags->twitter('image', $this->url . '/'. $file->getPublicUrl());
+                        $tags->twitter('image', ltrim($this->url . '/'. $file->getPublicUrl(), '/'));
                     }
                 } else {
                     $file = $resourceFactory->getFileObjectFromCombinedIdentifier($twitterImage);
-                    $tags->twitter('image', $this->url . '/'. $file->getPublicUrl());
+                    $tags->twitter('image', ltrim($this->url . '/'. $file->getPublicUrl(), '/'));
                 }
             }
 
             $shortcutIcon = $fluidData['shortcutIcon'];
             if($shortcutIcon) {
                 $image = $resourceFactory->getFileObjectFromCombinedIdentifier($shortcutIcon);
-                $tags->link('shortcut icon', $this->url . '/'. $image->getPublicUrl());
+                $tags->link('shortcut icon', ltrim($this->url . '/'. $image->getPublicUrl(), '/'));
             }
 
             $touchIcon = $fluidData['touchIcon'];
