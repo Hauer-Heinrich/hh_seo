@@ -165,38 +165,38 @@ class PageDataHook {
 
             $this->currentPageProperties = $this->pageRepository->getPage($this->typoScriptFrontendController->getRequestedId());
 
-            if($fluidData['title']) {
-                $separateBefore = str_replace('&nbsp;', ' ', $fluidData['titleSeparateBefore'] ? $fluidData['titleSeparateBefore'] : $fluidData['titleSeparate']);
-                $separateAfter = str_replace('&nbsp;', ' ', $fluidData['titleSeparateAfter'] ? $fluidData['titleSeparateAfter'] : $fluidData['titleSeparate']);
-                $titleBefore = $fluidData['titleBefore'] != null ? $fluidData['titleBefore'] . $separateBefore : '';
-                $titleAfter = $fluidData['titleAfter'] != null ? $separateAfter . $fluidData['titleAfter'] : '';
+            if(isset($fluidData['title'])) {
+                $separateBefore = str_replace('&nbsp;', ' ', $fluidData['titleSeparateBefore'] ?? $fluidData['titleSeparate']);
+                $separateAfter = str_replace('&nbsp;', ' ', $fluidData['titleSeparateAfter'] ?? $fluidData['titleSeparate']);
+                $titleBefore = isset($fluidData['titleBefore']) ? $fluidData['titleBefore'] . $separateBefore : '';
+                $titleAfter = isset($fluidData['titleAfter']) ? $separateAfter . $fluidData['titleAfter'] : '';
                 $title = $titleBefore . $fluidData['title'] . $titleAfter;
                 $tags->title($title);
             }
 
-            if($fluidData['keywords']) {
+            if(isset($fluidData['keywords'])) {
                 $tags->meta('keywords', $fluidData['keywords']);
             }
 
-            if($fluidData['description']) {
+            if(isset($fluidData['description'])) {
                 $tags->meta('description', $fluidData['description']);
             }
 
-            if($fluidData['og:type']) {
+            if(isset($fluidData['og:type'])) {
                 $tags->og('type', $fluidData['og:type']);
-            } else if(!$fluidData['og:type']) {
+            } else {
                 $tags->og('type', 'website');
             }
 
-            if($fluidData['og:title']) {
+            if(isset($fluidData['og:title'])) {
                 $tags->og('title', $fluidData['og:title']);
             }
 
-            if($fluidData['og:description']) {
+            if(isset($fluidData['og:description'])) {
                 $tags->og('description', $fluidData['og:description']);
             }
 
-            $ogImage = $fluidData['og:image'];
+            $ogImage = isset($fluidData['og:image']) ? $fluidData['og:image'] : false;
             if($ogImage) {
                 if(is_array($ogImage)) {
                     foreach ($ogImage as $value) {
@@ -213,21 +213,21 @@ class PageDataHook {
                 }
             }
 
-            if ($fluidData['twitter:card']) {
+            if (isset($fluidData['twitter:card'])) {
                 $tags->twitter('card', $fluidData['twitter:card']);
             } else {
                 $tags->twitter('card', 'summary');
             }
 
-            if($fluidData['twitter:title']) {
+            if(isset($fluidData['twitter:title'])) {
                 $tags->twitter('title', $fluidData['twitter:title']);
             }
 
-            if($fluidData['twitter:description']) {
+            if(isset($fluidData['twitter:description'])) {
                 $tags->twitter('description', $fluidData['twitter:description']);
             }
 
-            $twitterImage = $fluidData['twitter:image'];
+            $twitterImage = isset($fluidData['twitter:image']) ? $fluidData['twitter:image'] : false;
             if($twitterImage) {
                 if(is_array($twitterImage)) {
                     foreach ($twitterImage as $value) {
@@ -240,43 +240,45 @@ class PageDataHook {
                 }
             }
 
-            $shortcutIcon = $fluidData['shortcutIcon'];
+            $shortcutIcon = isset($fluidData['shortcutIcon']) ? $fluidData['shortcutIcon'] : false;
             if($shortcutIcon) {
                 $image = $resourceFactory->getFileObjectFromCombinedIdentifier($shortcutIcon);
                 $tags->link('shortcut icon', ltrim($this->url . '/'. $image->getPublicUrl(), '/'));
             }
 
-            $touchIcon = $fluidData['touchIcon'];
+            $touchIcon = isset($fluidData['touchIcon']) ? $fluidData['touchIcon'] : false;
             if ($touchIcon && file_exists($touchIcon)) {
                 $newData .= $this->setTouchIcons($touchIcon);
             }
 
-            if ($fluidData['format-detection'] === 'false') {
-                $tags->meta('format-detection', 'telephone=no');
-            } else if ($fluidData['format-detection'] === 'true') {
-                $tags->meta('format-detection', 'telephone=yes');
+            if(isset($fluidData['format-detection'])) {
+                if ($fluidData['format-detection'] === 'false') {
+                    $tags->meta('format-detection', 'telephone=no');
+                } else if ($fluidData['format-detection'] === 'true') {
+                    $tags->meta('format-detection', 'telephone=yes');
+                }
             }
 
-            if ($fluidData['theme-color']) {
+            if (isset($fluidData['theme-color'])) {
                 $tags->meta('theme-color', $fluidData['theme-color']);
                 $tags->meta('msapplication-TileColor', $fluidData['theme-color']);
             }
 
-            if ($fluidData['last-modified']) {
+            if (isset($fluidData['last-modified'])) {
                 $date = gmdate('D, d M Y H:i:s \G\M\T', intval($fluidData['last-modified']));
                 $tags->meta('Last-Modified', $date);
             }
 
             // geo data - position
-            if($fluidData['geo:region']) {
+            if(isset($fluidData['geo:region'])) {
                 $tags->meta('geo:region', $fluidData['geo:region']);
             }
 
-            if($fluidData['geo:placename']) {
+            if(isset($fluidData['geo:placename'])) {
                 $tags->meta('geo:placename', $fluidData['geo:placename']);
             }
 
-            if($fluidData['geo:position:long'] && $fluidData['geo:position:lat']) {
+            if(isset($fluidData['geo:position:long']) && isset($fluidData['geo:position:lat'])) {
                 $pos = $fluidData['geo:position:long'] . ';' . $fluidData['geo:position:lat'];
                 $icbm = $fluidData['geo:position:long'] . ', ' . $fluidData['geo:position:lat'];
                 $tags->meta('geo:position', $pos);
@@ -284,33 +286,41 @@ class PageDataHook {
             }
 
             // Custom
-            if ($fluidData['custom'] && is_array($fluidData['custom'])) {
+            if (isset($fluidData['custom']) && is_array($fluidData['custom'])) {
                 $newData .= $this->setCustomTags($fluidData['custom']);
             }
 
             // Robots
-            if($fluidData['robots:index'] || $fluidData['robots:follow']) {
-                $content = $fluidData['robots:index'];
-                if ($content != null && trim($content) != '' && $fluidData['robots:follow']) {
-                    $content .= ',';
+            $robotsContent = '';
+            if(isset($fluidData['robots:index'])) {
+                $robotsContent = $fluidData['robots:index'];
+            }
+
+            if(isset($fluidData['robots:follow'])) {
+                if ($robotsContent != null && trim($robotsContent) != '') {
+                    $robotsContent .= ',';
                 }
+
                 $content .= $fluidData['robots:follow'];
-                $tags->meta('robots', $content);
+            }
+
+            if ($robotsContent != null && trim($robotsContent) != '') {
+                $tags->meta('robots', $robotsContent);
             }
 
             // Author
-            if($fluidData['author']) {
+            if(isset($fluidData['author'])) {
                 $tags->meta('author', $fluidData['author']);
             }
-            if($fluidData['link:author']) {
+            if(isset($fluidData['link:author'])) {
                 $tags->link('author', $fluidData['link:author']);
             }
 
-            if($fluidData['copyright']) {
+            if(isset($fluidData['copyright'])) {
                 $tags->meta('copyright', $fluidData['copyright']);
             }
 
-            if($fluidData['designer']) {
+            if(isset($fluidData['designer'])) {
                 $tags->meta('designer', $fluidData['designer']);
             }
 
