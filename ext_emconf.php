@@ -24,8 +24,8 @@ $EM_CONF['hh_seo'] = [
     'version' => '0.4.0',
     'constraints' => [
         'depends' => [
-            'typo3' => '^10.4.0',
-            'seo' => '^10.4.0',
+            'typo3' => '10.4.0-11.5.99',
+            'seo' => '',
         ],
         'conflicts' => [
         ],

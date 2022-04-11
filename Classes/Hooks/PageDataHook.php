@@ -6,7 +6,6 @@ namespace HauerHeinrich\HhSeo\Hooks;
 // use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use \TYPO3\CMS\Core\Page\PageRenderer;
-use PageRepository;
 use \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use PedroBorges\MetaTags\MetaTags;
 
@@ -159,6 +158,15 @@ class PageDataHook {
 
             $this->typoScriptFrontendController = $GLOBALS['TSFE'] ?? GeneralUtility::makeInstance(TypoScriptFrontendController::class);
             $this->pageRepository = GeneralUtility::makeInstance(PageRepository::class);
+
+            /**
+             * @deprecated since TYPO3 11
+             */
+            if (class_exists('\\TYPO3\\CMS\\Core\\Domain\\Repository\\PageRepository', true)) {
+                $this->pageRepository = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Domain\Repository\PageRepository::class);
+            } else {
+                $this->pageRepository = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\Page\PageRepository::class);
+            }
 
             $request = $GLOBALS['TYPO3_REQUEST'];
             $this->url = rtrim($request->getUri()->getScheme() . '://' . $request->getUri()->getHost(), '/');
