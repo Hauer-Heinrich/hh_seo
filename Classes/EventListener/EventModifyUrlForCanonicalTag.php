@@ -19,8 +19,8 @@ class EventModifyUrlForCanonicalTag {
         if(!empty($metaTag)) {
             ksort($metaTag);
 
-            foreach ($metaTag as $key => $value) {
-                if(array_key_exists('headerData', $value) && array_key_exists('canonical', $value['headerData'])) {
+            foreach ($metaTag as $value) {
+                if(array_key_exists('headerData', $value) && is_array($value['headerData']) && array_key_exists('canonical', $value['headerData'])) {
                     $canonical = $value['headerData']['canonical'];
                     if(!empty($canonical)) {
                         $event->setUrl($canonical);

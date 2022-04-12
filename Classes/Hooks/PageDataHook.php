@@ -157,7 +157,6 @@ class PageDataHook {
             $this->pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'];
 
             $this->typoScriptFrontendController = $GLOBALS['TSFE'] ?? GeneralUtility::makeInstance(TypoScriptFrontendController::class);
-            $this->pageRepository = GeneralUtility::makeInstance(PageRepository::class);
 
             /**
              * @deprecated since TYPO3 11
