@@ -271,6 +271,7 @@ class PageDataHook {
                 $tags->meta('msapplication-TileColor', $fluidData['theme-color']);
             }
 
+            // uses timestamp as input
             if (isset($fluidData['last-modified'])) {
                 $date = gmdate('D, d M Y H:i:s \G\M\T', intval($fluidData['last-modified']));
                 $tags->meta('Last-Modified', $date);
