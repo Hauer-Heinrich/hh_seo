@@ -10,6 +10,17 @@
             "role": "Developer"
         }
     ],
+    "support": {
+        "issues": "https://github.com/Hauer-Heinrich/hh_seo/issues",
+        "source": "https://github.com/Hauer-Heinrich/hh_seo",
+        "docs": "https://github.com/Hauer-Heinrich/hh_seo/blob/master/README.md"
+    },
+    "funding": [
+        {
+            "type": "paypal",
+            "url": "https://www.paypal.com/paypalme/hauerheinrich"
+        }
+    ],
     "version": "0.4.2",
     "license": ["GPL-2.0-or-later"],
     "keywords": ["TYPO3 CMS", "SEO", "Extension"],
@@ -29,6 +40,8 @@
     },
     "extra": {
         "typo3/cms": {
+            "cms-package-dir": "{$vendor-dir}/typo3/cms",
+            "web-dir": ".Build/Web",
             "extension-key": "hh_seo"
         }
     }

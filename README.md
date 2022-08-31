@@ -42,6 +42,9 @@ ViewHelper attribute "order" (required):
 - [Example 1](Resources/Private/Templates/Example.1.html)
 - [Example 2](Resources/Private/Templates/Example.2.html)
 
+### Meta-Tags params:
+- last-modified: uses timestamp as input
+
 ### Todos
 - currently nothing
 
