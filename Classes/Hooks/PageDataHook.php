@@ -68,8 +68,8 @@ class PageDataHook {
     protected $currentPageUid = 0;
 
     public function __construct() {
-        $this->currentPageUid = $GLOBALS['TSFE']->id;
-        $this->additionalData = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'];
+        $this->currentPageUid = isset($GLOBALS['TSFE']->id) ? $GLOBALS['TSFE']->id : 1;
+        $this->additionalData = isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']) ? $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'] : [];
         $this->pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
     }
 
