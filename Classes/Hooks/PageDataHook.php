@@ -172,7 +172,12 @@ class PageDataHook {
 
             $this->currentPageProperties = $this->pageRepository->getPage($this->typoScriptFrontendController->getRequestedId());
 
+            if(isset($fluidData['viewport'])) {
+                $tags->meta('viewport', $fluidData['viewport']);
+            }
+
             if(isset($fluidData['title'])) {
+                $fluidData['titleSeparate'] = isset($fluidData['titleSeparate']) ? $fluidData['titleSeparate'] : '';
                 $separateBefore = str_replace('&nbsp;', ' ', $fluidData['titleSeparateBefore'] ?? $fluidData['titleSeparate']);
                 $separateAfter = str_replace('&nbsp;', ' ', $fluidData['titleSeparateAfter'] ?? $fluidData['titleSeparate']);
                 $titleBefore = isset($fluidData['titleBefore']) ? $fluidData['titleBefore'] . $separateBefore : '';
