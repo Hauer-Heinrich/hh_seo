@@ -31,6 +31,7 @@ namespace HauerHeinrich\HhSeo\ViewHelpers;
  */
 
 // use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
@@ -97,7 +98,18 @@ class MetaTagViewHelper extends AbstractViewHelper {
         $renderChildren = $renderChildrenClosure();
 
         if(!empty(trim($renderChildren))) {
-            $childData[$dataType] = parse_ini_string($renderChildren, true, INI_SCANNER_RAW);
+            $iniArrayUnformated = parse_ini_string($renderChildren, true, INI_SCANNER_RAW);
+            if(\is_array($iniArrayUnformated)) {
+                foreach ($iniArrayUnformated as $key => $value) {
+                    if(\is_string($value)) {
+                        $iniArrayUnformated[$key] = \urldecode($value);
+                    }
+                }
+            } else {
+                $logger = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\LogManager')->getLogger(__CLASS__);
+                $logger->error('EXT:hh_seo -> MetaTagViewHelper: parse_ini_string = false', ['iniArrayUnformated' => $iniArrayUnformated]);
+            }
+            $childData[$dataType] = $iniArrayUnformated;
             $childData['overwrite'] = $arguments['overwrite'];
         }
 
