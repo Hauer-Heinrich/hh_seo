@@ -1,0 +1,63 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:seo="http://typo3.org/ns/HauerHeinrich/HhSeo/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+
+<f:variable name="seoTitle"><f:spaceless>
+    <f:if condition="{newsItem.alternativeTitle}">
+        <f:then>
+            <seo:formatIni data="{newsItem.alternativeTitle}" delete-html="true" urlencode="true" />
+        </f:then>
+        <f:else>
+            <seo:formatIni data="{newsItem.title}" delete-html="true" urlencode="true" />
+        </f:else>
+    </f:if>
+</f:spaceless></f:variable>
+
+<f:variable name="seoDescription"><f:spaceless>
+    <f:if condition="{newsItem.description}">
+        <f:then>
+            <seo:formatIni data="{newsItem.description}" delete-html="true" urlencode="true" />
+        </f:then>
+        <f:else>
+            <f:if condition="{newsItem.teaser}">
+                <f:then>
+                    <f:format.crop maxCharacters="155" append="..."><seo:formatIni data="{newsItem.teaser}" delete-html="true" urlencode="true" /></f:format.crop>
+                </f:then>
+                <f:else>
+                    <f:format.crop maxCharacters="155" append="..."><seo:formatIni data="{newsItem.bodytext}" delete-html="true" urlencode="true" /></f:format.crop>
+                </f:else>
+            </f:if>
+        </f:else>
+    </f:if>
+</f:spaceless></f:variable>
+
+<seo:metaTag order="10" overwrite="false">
+title = News: {seoTitle}
+description = {seoDescription}
+
+<f:if condition="{newsItem.author}">
+author = {newsItem.author}
+</f:if>
+
+og:title = {seoTitle}
+og:description = {seoDescription}
+<f:if condition="{newsItem.falMedia -> f:count()} > 0">
+<f:for each="{newsItem.falMedia}" as="image" iteration="i">
+<f:if condition="{image.showinpreview}">
+og:image[] = {f:uri.image(src: '{image.uid}', treatIdAsReference: 1)}
+</f:if>
+</f:for>
+</f:if>
+
+twitter:title = {seoTitle}
+twitter:description = {seoDescription}
+<f:if condition="{newsItem.falMedia -> f:count()} > 0">
+<f:for each="{newsItem.falMedia}" as="image" iteration="i">
+<f:if condition="{image.showinpreview}">
+twitter:image[] = {f:uri.image(src: '{image.uid}', treatIdAsReference: 1)}
+</f:if>
+</f:for>
+</f:if>
+</seo:metaTag>
+
+</html>
