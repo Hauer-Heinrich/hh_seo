@@ -39,7 +39,8 @@ class FormatIniViewHelper extends AbstractViewHelper {
     public function initializeArguments() {
         $this->registerArguments([
             ['data', 'string', 'String', false],
-            ['delete-html', 'bool', 'Delete HTML-Tags?', false, false]
+            ['strip-tags', 'bool', 'Delete HTML-Tags?', false, false],
+            ['urlencode', 'bool', 'Urlencode string if string contains chars like $&!()', false, false]
         ]);
     }
 
@@ -63,8 +64,12 @@ class FormatIniViewHelper extends AbstractViewHelper {
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
         $renderChildren = $renderChildrenClosure() ? trim($renderChildrenClosure()) : $arguments['data'];
 
-        if($arguments['delete-html']) {
-            $renderChildren = strip_tags($renderChildren);
+        if(isset($arguments['strip-tags']) && $arguments['strip-tags'] == true) {
+            $renderChildren = \strip_tags($renderChildren);
+        }
+
+        if(isset($arguments['urlencode']) && $arguments['urlencode'] == true) {
+            $renderChildren = \urlencode($renderChildren);
         }
 
         $formated = str_replace(["\r\n", "\n", "\r"], '', $renderChildren);

@@ -5,10 +5,10 @@
 <f:variable name="seoTitle"><f:spaceless>
     <f:if condition="{newsItem.alternativeTitle}">
         <f:then>
-            <seo:formatIni data="{newsItem.alternativeTitle}" delete-html="true" urlencode="true" />
+            <seo:formatIni data="{newsItem.alternativeTitle}" strip-tags="true" urlencode="true" />
         </f:then>
         <f:else>
-            <seo:formatIni data="{newsItem.title}" delete-html="true" urlencode="true" />
+            <seo:formatIni data="{newsItem.title}" strip-tags="true" urlencode="true" />
         </f:else>
     </f:if>
 </f:spaceless></f:variable>
@@ -16,15 +16,15 @@
 <f:variable name="seoDescription"><f:spaceless>
     <f:if condition="{newsItem.description}">
         <f:then>
-            <seo:formatIni data="{newsItem.description}" delete-html="true" urlencode="true" />
+            <seo:formatIni data="{newsItem.description}" strip-tags="true" urlencode="true" />
         </f:then>
         <f:else>
             <f:if condition="{newsItem.teaser}">
                 <f:then>
-                    <f:format.crop maxCharacters="155" append="..."><seo:formatIni data="{newsItem.teaser}" delete-html="true" urlencode="true" /></f:format.crop>
+                    <seo:formatIni urlencode="true"><f:format.crop maxCharacters="155" append="..."><f:format.stripTags>{newsItem.teaser}</f:format.stripTags></f:format.crop></seo:formatIni>
                 </f:then>
                 <f:else>
-                    <f:format.crop maxCharacters="155" append="..."><seo:formatIni data="{newsItem.bodytext}" delete-html="true" urlencode="true" /></f:format.crop>
+                    <seo:formatIni urlencode="true"><f:format.crop maxCharacters="155" append="..."><f:format.stripTags>{newsItem.bodytext}</f:format.stripTags></f:format.crop></seo:formatIni>
                 </f:else>
             </f:if>
         </f:else>
@@ -39,6 +39,7 @@ description = {seoDescription}
 author = {newsItem.author}
 </f:if>
 
+og:type = article
 og:title = {seoTitle}
 og:description = {seoDescription}
 <f:if condition="{newsItem.falMedia -> f:count()} > 0">
