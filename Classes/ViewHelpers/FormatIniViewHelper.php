@@ -64,6 +64,10 @@ class FormatIniViewHelper extends AbstractViewHelper {
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
         $renderChildren = $renderChildrenClosure() ? trim($renderChildrenClosure()) : $arguments['data'];
 
+        if(empty($renderChildren)) {
+            return '';
+        }
+
         if(isset($arguments['strip-tags']) && $arguments['strip-tags'] == true) {
             $renderChildren = \strip_tags($renderChildren);
         }
