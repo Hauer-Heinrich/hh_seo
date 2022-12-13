@@ -27,7 +27,7 @@ plugin.tx_hhseo {
         # cat=plugin.tx_hhseo_basic/basic/0100; type=string; label= Author name fallback if not set in page settings
             author =
         # cat=plugin.tx_hhseo_basic/basic/0200; type=boolean; label= automaticly show telephonenumbers as links: (http://www.html-5.com/metatags/format-detection-meta-tag.html)
-            formatDetection = false
+            formatDetection = 0
         # cat=plugin.tx_hhseo_Layout/basic/0300; type=color; label= themeColor: (https://developers.google.com/web/fundamentals/design-and-ux/browser-customization/#meta_theme_color_for_chrome_and_opera)
             themeColor =
         # cat=plugin.tx_hhseo_basic/basic/0400; type=string; label= Designer name or webaddress
