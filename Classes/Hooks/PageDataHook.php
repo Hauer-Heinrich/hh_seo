@@ -126,23 +126,25 @@ class PageDataHook {
             ksort($metaTag);
 
             $fluidData = [];
-            foreach ($metaTag as $key => $value) {
+            foreach ($metaTag as $value) {
                 $data = $value['headerData'];
 
-                if($value['overwrite'] == true) {
+                if(array_key_exists('overwrite', $value) && $value['overwrite'] == true) {
                     $fluidData = $data;
-                } else {
-                    foreach ($data as $dataKey => $dataValue) {
-                        if (is_array($dataValue)) {
-                            $errors = array_filter($dataValue);
-                            if (!empty($errors)) {
-                                $fluidData[$dataKey] = $dataValue;
-                            }
-                        } else if(is_string($dataValue) && !empty(trim($dataValue))) {
-                            $fluidData[$dataKey] = strip_tags($dataValue);
-                        } else if(!empty($dataValue)) {
+
+                    continue;
+                }
+
+                foreach ($data as $dataKey => $dataValue) {
+                    if (is_array($dataValue)) {
+                        $errors = array_filter($dataValue);
+                        if (!empty($errors)) {
                             $fluidData[$dataKey] = $dataValue;
                         }
+                    } else if(is_string($dataValue) && !empty(trim($dataValue))) {
+                        $fluidData[$dataKey] = strip_tags($dataValue);
+                    } else if(!empty($dataValue)) {
+                        $fluidData[$dataKey] = $dataValue;
                     }
                 }
             }
