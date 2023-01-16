@@ -1,0 +1,6 @@
+### Ignore some folders on archives/releases
+.gitattributes export-ignore
+.gitignore export-ignore
+.github export-ignore
+.editorconfig export-ignore
+.*.code-workspace export-ignore
