@@ -2,23 +2,9 @@
 defined('TYPO3_MODE') || die();
 
 call_user_func(function() {
-    $extensionKey = 'hh_seo';
-
-    $typo3version = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Information\Typo3Version::class);
-    $version = \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger($typo3version->getVersion());
-
     // deactivate ext:seo Meta-Tag generation
     // $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags'] = [];
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags']['metatag'] = [];
-
-    // $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php']['render-preProcess'][$extensionKey] =
-    //     \HauerHeinrich\HhSeo\Hooks\PageDataHook::class . '->addPageData';
-    // $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php']['render-postProcess'][$extensionKey] =
-    //     \HauerHeinrich\HhSeo\Hooks\PageDataHook::class . '->addPageData';
-    // $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-output'][$extensionKey] =
-    //     \HauerHeinrich\HhSeo\Hooks\PageDataHook::class . '->addPageData';
-    // $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-all'][$extensionKey] =
-    //     \HauerHeinrich\HhSeo\Hooks\PageDataHook::class . '->addPageData';
 
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags']['metatag'] =
         \HauerHeinrich\HhSeo\Hooks\PageDataHook::class . '->addPageData';
