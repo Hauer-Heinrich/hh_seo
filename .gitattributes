@@ -4,3 +4,10 @@
 .github export-ignore
 .editorconfig export-ignore
 *.code-workspace export-ignore
+.on-save.json export-ignore
+.vscode export-ignore
+github export-ignore
+
+gulpfile.js export-ignore
+package-lock.json export-ignore
+package.json export-ignore
