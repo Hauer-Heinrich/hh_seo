@@ -316,7 +316,7 @@ class PageDataHook {
                     $robotsContent .= ',';
                 }
 
-                $content .= $fluidData['robots:follow'];
+                $robotsContent .= $fluidData['robots:follow'];
             }
 
             if ($robotsContent != null && trim($robotsContent) != '') {
