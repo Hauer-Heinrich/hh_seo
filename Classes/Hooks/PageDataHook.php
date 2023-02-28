@@ -69,8 +69,19 @@ class PageDataHook {
 
     public function __construct() {
         $this->currentPageUid = isset($GLOBALS['TSFE']->id) ? $GLOBALS['TSFE']->id : 1;
-        $this->additionalData = isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']) ? $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'] : [];
+        $this->additionalData = $this->setAdditionalData();
         $this->pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+    }
+
+    public function setAdditionalData(): void {
+        // old TYPO3
+        if(isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'])) {
+            $this->additionalData = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'];
+        }
+
+        if(isset($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['hh_seo'])) {
+            $this->additionalData = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['hh_seo'];
+        }
     }
 
     /**
@@ -99,6 +110,24 @@ class PageDataHook {
      * @return string
     */
     public function addPageData(&$parameters = null) {
+        $contentObjectRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::class);
+        $htmlHead = $contentObjectRenderer->getData('levelfield : -1, html_head, slide');
+        $htmlBodyTop = $contentObjectRenderer->getData('levelfield : -1, html_body_top, slide');
+        $htmlBodyBottom = $contentObjectRenderer->getData('levelfield : -1, html_body_bottom, slide');
+
+        if (!empty($htmlHead)) {
+            $this->setHTMLCodeHead($htmlHead);
+        }
+
+        if (!empty($htmlBodyTop)) {
+            $this->setHTMLCodeBodyTop($htmlBodyTop);
+        }
+
+        if (!empty($htmlBodyBottom)) {
+            $this->setHTMLCodeBodyBottom($htmlBodyBottom);
+        }
+
+        // no meta tags set via FLUID
         if(empty($this->additionalData)) {
             return '';
         }
@@ -353,23 +382,6 @@ class PageDataHook {
             }
         } else {
             $this->setHTMLCodeHead($cacheData);
-        }
-
-        $contentObjectRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::class);
-        $htmlHead = $contentObjectRenderer->getData('levelfield : -1, html_head, slide');
-        $htmlBodyTop = $contentObjectRenderer->getData('levelfield : -1, html_body_top, slide');
-        $htmlBodyBottom = $contentObjectRenderer->getData('levelfield : -1, html_body_bottom, slide');
-
-        if (!empty($htmlHead)) {
-            $this->setHTMLCodeHead($htmlHead);
-        }
-
-        if (!empty($htmlBodyTop)) {
-            $this->setHTMLCodeBodyTop($htmlBodyTop);
-        }
-
-        if (!empty($htmlBodyBottom)) {
-            $this->setHTMLCodeBodyBottom($htmlBodyBottom);
         }
     }
 
