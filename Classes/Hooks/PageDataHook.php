@@ -69,7 +69,7 @@ class PageDataHook {
 
     public function __construct() {
         $this->currentPageUid = isset($GLOBALS['TSFE']->id) ? $GLOBALS['TSFE']->id : 1;
-        $this->additionalData = $this->setAdditionalData();
+        $this->setAdditionalData();
         $this->pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
     }
 
