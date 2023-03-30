@@ -30,9 +30,9 @@ namespace HauerHeinrich\HhSeo\ViewHelpers;
  *  EXAMPLE: Resources/Private/Templates/Example.html
  */
 
-// use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
+// use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 class FormatIniViewHelper extends AbstractViewHelper {
 
