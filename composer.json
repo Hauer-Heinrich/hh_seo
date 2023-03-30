@@ -21,7 +21,7 @@
             "url": "https://www.paypal.com/paypalme/hauerheinrich"
         }
     ],
-    "version": "0.6.0",
+    "version": "0.7.0",
     "license": ["GPL-2.0-or-later"],
     "keywords": ["TYPO3 CMS", "SEO", "Extension"],
     "replace": {
@@ -29,8 +29,8 @@
         "typo3-ter/hh-seo": "self.version"
     },
     "require": {
-        "typo3/cms-core": "^11.5.0",
-        "typo3/cms-seo": "^11.5.0"
+        "typo3/cms-core": "^11.5.0 || ^12.2.0",
+        "typo3/cms-seo": "^11.5.0 || ^12.2.0"
     },
     "autoload": {
         "psr-4": {
