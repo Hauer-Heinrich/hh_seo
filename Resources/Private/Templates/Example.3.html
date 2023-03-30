@@ -7,12 +7,12 @@
     See the ViewHelper at hh_seo/Classes/ViewHelpers/MetaTagViewHelper.php
 </f:comment>
 
-<hhs:metaTag order="0"
+<seo:metaTag order="0"
     title="{data.title}"
     description="{data.description}"
     theme-color="#000"
     og-image="<f:if condition='{og_image.0}'>{f:uri.image(src: '{og_image.0}'', treatIdAsReference: 1)}</f:if>"
 >
-</hhs:metaTag>
+</seo:metaTag>
 
 </html>

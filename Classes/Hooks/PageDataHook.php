@@ -244,13 +244,13 @@ class PageDataHook {
                 if(is_array($ogImage)) {
                     foreach ($ogImage as $value) {
                         $file = $resourceFactory->getFileObjectFromCombinedIdentifier($value);
-                        $tags->og('image', $this->url . '/'. $file->getPublicUrl());
+                        $tags->og('image', $this->url . $file->getPublicUrl());
                         $tags->og('image:width', $file->getProperty('width'));
                         $tags->og('image:height', $file->getProperty('height'));
                     }
                 } else {
                     $file = $resourceFactory->getFileObjectFromCombinedIdentifier($ogImage);
-                    $tags->og('image', $this->url . '/'. $file->getPublicUrl());
+                    $tags->og('image', $this->url . $file->getPublicUrl());
                     $tags->og('image:width', $file->getProperty('width'));
                     $tags->og('image:height', $file->getProperty('height'));
                 }
@@ -275,18 +275,18 @@ class PageDataHook {
                 if(is_array($twitterImage)) {
                     foreach ($twitterImage as $value) {
                         $file = $resourceFactory->getFileObjectFromCombinedIdentifier($value);
-                        $tags->twitter('image', ltrim($this->url . '/'. $file->getPublicUrl(), '/'));
+                        $tags->twitter('image', ltrim($this->url . $file->getPublicUrl(), '/'));
                     }
                 } else {
                     $file = $resourceFactory->getFileObjectFromCombinedIdentifier($twitterImage);
-                    $tags->twitter('image', ltrim($this->url . '/'. $file->getPublicUrl(), '/'));
+                    $tags->twitter('image', ltrim($this->url . $file->getPublicUrl(), '/'));
                 }
             }
 
             $shortcutIcon = isset($fluidData['shortcutIcon']) ? $fluidData['shortcutIcon'] : false;
             if($shortcutIcon) {
                 $image = $resourceFactory->getFileObjectFromCombinedIdentifier($shortcutIcon);
-                $tags->link('shortcut icon', ltrim($this->url . '/'. $image->getPublicUrl(), '/'));
+                $tags->link('shortcut icon', ltrim($this->url . $image->getPublicUrl(), '/'));
             }
 
             $touchIcon = isset($fluidData['touchIcon']) ? $fluidData['touchIcon'] : false;
@@ -352,7 +352,6 @@ class PageDataHook {
                 $tags->meta('robots', $robotsContent);
             }
 
-            // Author
             if(isset($fluidData['author'])) {
                 $tags->meta('author', $fluidData['author']);
             }
@@ -366,6 +365,9 @@ class PageDataHook {
 
             if(isset($fluidData['designer'])) {
                 $tags->meta('designer', $fluidData['designer']);
+            }
+            if(isset($fluidData['link:designer'])) {
+                $tags->link('designer', $fluidData['link:designer']);
             }
 
             if (!empty($fluidData['jsonld'])) {

@@ -25,13 +25,15 @@ titleSeparateAfter = "{hhSeo.titleSeparateAfter}"
 
 description = <seo:formatIni data="{data.description}" />
 
-designer = {hhSeo.designer}
+author = {f:if(condition: '{data.author}', then: '{data.author}', else: '{hhSeo.author}')}
+designer = {f:if(condition: '{hhSeo.designer}', then: '{hhSeo.designer}')}
+link:designer = /humans.txt
+
 theme-color = {hhSeo.themeColor }
 shortcutIcon = {hhSeo.shortcutIcon}
 touchIcon = {hhSeo.touchIcon}
 format-detection = {hhSeo.formatDetection}
 last-modified = {data.SYS_LASTCHANGED}
-author = {hhSeo.author}
 
 robots:index = {f:if(condition: '{data.no_index}', then: 'noindex')}
 robots:follow = {f:if(condition: '{data.no_follow}', then: 'nofollow')}
