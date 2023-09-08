@@ -7,7 +7,7 @@ namespace HauerHeinrich\HhSeo\Hooks;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use \TYPO3\CMS\Core\Page\PageRenderer;
 use \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
-use PedroBorges\MetaTags\MetaTags;
+use \PedroBorges\MetaTags\MetaTags;
 
 class PageDataHook {
 
@@ -179,7 +179,6 @@ class PageDataHook {
             }
 
             $newData = '';
-
             $tags = new MetaTags;
             $resourceFactory = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
             $configurationManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');

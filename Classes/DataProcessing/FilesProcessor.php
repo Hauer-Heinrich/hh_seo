@@ -14,10 +14,10 @@ namespace HauerHeinrich\HhSeo\DataProcessing;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
-use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
-use TYPO3\CMS\Frontend\Resource\FileCollector;
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use \TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
+use \TYPO3\CMS\Frontend\Resource\FileCollector;
 
 /**
  * This data processor can be used for processing data for record which contain
