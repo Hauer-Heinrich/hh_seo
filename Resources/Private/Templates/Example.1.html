@@ -2,7 +2,8 @@
     xmlns:seo="http://typo3.org/ns/HauerHeinrich/HhSeo/ViewHelpers"
     data-namespace-typo3-fluid="true">
 
-<f:comment>
+<f:comment>DEPRICATED !!! PLEASE USE "YAML"-Style see file "ExampleYamlStyle.1.html" !!!
+
     ViewHelper attribute "order" (required):
     - A higher "order" number overwrites lower ones.
     - Example: use <seo:metaTag order="0">...</seo:metaTag> in your theme and EXT:news use a higher number e. g. <seo:metaTag order="10">...</seo:metaTag>
@@ -41,9 +42,9 @@ robots:follow = {f:if(condition: '{data.no_follow}', then: 'nofollow')}
 og:title = {data.og_title}
 og:description = <seo:formatIni data="{data.og_description}" />
 <f:if condition="{og_image->f:count()} > 0">
-    <f:for each="{og_image}" as="image" iteration="i">
-        og:image[] = {f:uri.image(src: '{image.uid}', treatIdAsReference: 1)}
-    </f:for>
+<f:for each="{og_image}" as="image" iteration="i">
+og:image[] = {f:uri.image(src: '{image.uid}', treatIdAsReference: 1)}
+</f:for>
 </f:if>
 
 twitter:title = {data.twitter_title}

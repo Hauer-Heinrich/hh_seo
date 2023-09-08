@@ -223,63 +223,104 @@ class PageDataHook {
                 $tags->meta('description', $fluidData['description']);
             }
 
-            if(isset($fluidData['og:type'])) {
-                $tags->og('type', $fluidData['og:type']);
-            } else {
-                $tags->og('type', 'website');
-            }
+            if(isset($fluidData['og']) && \is_array($fluidData['og'])) {
+                foreach ($fluidData['og'] as $key => $value) {
+                    if($key === 'images' && \is_array($value)) {
+                        if(\is_array($value)) {
+                            foreach ($value as $imageData) {
+                                if(isset($imageData['image'])) {
+                                    if(\str_starts_with($imageData['image'], 'https://')) {
+                                        $tags->og('image', $imageData['image'], '/');
+                                    } else {
+                                        $tags->og('image', ltrim($this->url . $imageData['image'], '/'));
+                                    }
+                                }
 
-            if(isset($fluidData['og:title'])) {
-                $tags->og('title', $fluidData['og:title']);
-            }
+                                // width and height have to be after "image"
+                                if(isset($imageData['width'])) {
+                                    $tags->og('image:width', $imageData['width']);
+                                }
+                                if(isset($imageData['height'])) {
+                                    $tags->og('image:height', $imageData['height']);
+                                }
+                            }
+                        }
 
-            if(isset($fluidData['og:description'])) {
-                $tags->og('description', $fluidData['og:description']);
-            }
-
-            $ogImage = isset($fluidData['og:image']) ? $fluidData['og:image'] : false;
-            if($ogImage) {
-                if(is_array($ogImage)) {
-                    foreach ($ogImage as $value) {
-                        $file = $resourceFactory->getFileObjectFromCombinedIdentifier($value);
-                        $tags->og('image', $this->url . $file->getPublicUrl());
-                        $tags->og('image:width', $file->getProperty('width'));
-                        $tags->og('image:height', $file->getProperty('height'));
+                        continue;
                     }
-                } else {
-                    $file = $resourceFactory->getFileObjectFromCombinedIdentifier($ogImage);
-                    $tags->og('image', $this->url . $file->getPublicUrl());
-                    $tags->og('image:width', $file->getProperty('width'));
-                    $tags->og('image:height', $file->getProperty('height'));
+
+                    $tags->og($key, $value);
                 }
             }
 
-            if (isset($fluidData['twitter:card'])) {
-                $tags->twitter('card', $fluidData['twitter:card']);
+            // TODO:
+            // @deprecated
+            $ogImage = isset($fluidData['og:image']) ? $fluidData['og:image'] : null;
+            if(\is_string($ogImage)) {
+                if(filter_var($ogImage, FILTER_VALIDATE_URL)) {
+                    $tags->og('image', $ogImage);
+                    $ogImageHeight = isset($fluidData['og:image:height']) ? $fluidData['og:image:height'] : false;
+                    $ogImageWidth = isset($fluidData['og:image:width']) ? $fluidData['og:image:width'] : false;
+                    $tags->og('image:width', $ogImageWidth);
+                    $tags->og('image:height', $ogImageHeight);
+                }
+            }
+
+            if(isset($fluidData['twitter']) && \is_array($fluidData['twitter'])) {
+                foreach ($fluidData['twitter'] as $key => $value) {
+                    if($key === 'images' && \is_array($value)) {
+                        if(\is_array($value)) {
+                            foreach ($value as $imageData) {
+                                if(isset($imageData['image'])) {
+                                    if(\str_starts_with($imageData['image'], 'https://')) {
+                                        $tags->twitter('image', $imageData['image'], '/');
+
+                                        continue;
+                                    }
+
+                                    $tags->twitter('image', ltrim($this->url . $imageData['image'], '/'));
+                                }
+
+                            }
+                        }
+
+                        continue;
+                    }
+
+                    $tags->twitter($key, $value);
+                }
+
             } else {
-                $tags->twitter('card', 'summary');
-            }
+                // TODO:
+                // @deprecated
+                if (isset($fluidData['twitter:card'])) {
+                    $tags->twitter('card', $fluidData['twitter:card']);
+                } else {
+                    $tags->twitter('card', 'summary');
+                }
 
-            if(isset($fluidData['twitter:title'])) {
-                $tags->twitter('title', $fluidData['twitter:title']);
-            }
+                if(isset($fluidData['twitter:title'])) {
+                    $tags->twitter('title', $fluidData['twitter:title']);
+                }
 
-            if(isset($fluidData['twitter:description'])) {
-                $tags->twitter('description', $fluidData['twitter:description']);
-            }
+                if(isset($fluidData['twitter:description'])) {
+                    $tags->twitter('description', $fluidData['twitter:description']);
+                }
 
-            $twitterImage = isset($fluidData['twitter:image']) ? $fluidData['twitter:image'] : false;
-            if($twitterImage) {
-                if(is_array($twitterImage)) {
-                    foreach ($twitterImage as $value) {
-                        $file = $resourceFactory->getFileObjectFromCombinedIdentifier($value);
+                $twitterImage = isset($fluidData['twitter:image']) ? $fluidData['twitter:image'] : false;
+                if($twitterImage) {
+                    if(is_array($twitterImage)) {
+                        foreach ($twitterImage as $value) {
+                            $file = $resourceFactory->getFileObjectFromCombinedIdentifier($value);
+                            $tags->twitter('image', ltrim($this->url . $file->getPublicUrl(), '/'));
+                        }
+                    } else {
+                        $file = $resourceFactory->getFileObjectFromCombinedIdentifier($twitterImage);
                         $tags->twitter('image', ltrim($this->url . $file->getPublicUrl(), '/'));
                     }
-                } else {
-                    $file = $resourceFactory->getFileObjectFromCombinedIdentifier($twitterImage);
-                    $tags->twitter('image', ltrim($this->url . $file->getPublicUrl(), '/'));
                 }
             }
+
 
             $shortcutIcon = isset($fluidData['shortcutIcon']) ? $fluidData['shortcutIcon'] : false;
             if($shortcutIcon) {
@@ -312,60 +353,101 @@ class PageDataHook {
             }
 
             // geo data - position
-            if(isset($fluidData['geo:region'])) {
-                $tags->meta('geo:region', $fluidData['geo:region']);
-            }
+            if (isset($fluidData['geo']) && \is_array($fluidData['geo'])) {
+                foreach ($fluidData['geo'] as $key => $value) {
+                    if($key === 'position' && \is_array($value) && isset($value['long']) && isset($value['lat'])) {
+                        $pos = $value['long'] . ';' . $value['long'];
+                        $icbm = $value['lat'] . ', ' . $value['lat'];
+                        $tags->meta('geo:position', $pos);
+                        $tags->meta('ICBM', $icbm);
+                        continue;
+                    }
 
-            if(isset($fluidData['geo:placename'])) {
-                $tags->meta('geo:placename', $fluidData['geo:placename']);
-            }
+                    $tags->meta('geo:'.$key, $value);
+                }
+            } else {
+                // TODO:
+                // @deprecated
+                if(isset($fluidData['geo:region'])) {
+                    $tags->meta('geo:region', $fluidData['geo:region']);
+                }
 
-            if(isset($fluidData['geo:position:long']) && isset($fluidData['geo:position:lat'])) {
-                $pos = $fluidData['geo:position:long'] . ';' . $fluidData['geo:position:lat'];
-                $icbm = $fluidData['geo:position:long'] . ', ' . $fluidData['geo:position:lat'];
-                $tags->meta('geo:position', $pos);
-                $tags->meta('ICBM', $icbm);
+                if(isset($fluidData['geo:placename'])) {
+                    $tags->meta('geo:placename', $fluidData['geo:placename']);
+                }
+
+                if(isset($fluidData['geo:position:long']) && isset($fluidData['geo:position:lat'])) {
+                    $pos = $fluidData['geo:position:long'] . ';' . $fluidData['geo:position:lat'];
+                    $icbm = $fluidData['geo:position:long'] . ', ' . $fluidData['geo:position:lat'];
+                    $tags->meta('geo:position', $pos);
+                    $tags->meta('ICBM', $icbm);
+                }
             }
 
             // Custom
-            if (isset($fluidData['custom']) && is_array($fluidData['custom'])) {
+            if(isset($fluidData['custom']) && \is_array($fluidData['custom'])) {
                 $newData .= $this->setCustomTags($fluidData['custom']);
             }
 
             // Robots
-            $robotsContent = '';
-            if(isset($fluidData['robots:index'])) {
-                $robotsContent = $fluidData['robots:index'];
-            }
+            if(isset($fluidData['robots']) && \is_array($fluidData['robots'])) {
+                $robotsContent = '';
+                foreach ($fluidData['robots'] as $key => $value) {
+                    $robotsContent .= $value;
 
-            if(isset($fluidData['robots:follow'])) {
-                if ($robotsContent != null && trim($robotsContent) != '') {
-                    $robotsContent .= ',';
+                    if ($key !== array_key_last($fluidData['robots'])) {
+                        $robotsContent .= ', ';
+                    }
+                }
+                $tags->meta('robots', $robotsContent);
+            } else {
+                // TODO:
+                // @deprecated
+                $robotsContent = '';
+                if(isset($fluidData['robots:index'])) {
+                    $robotsContent = $fluidData['robots:index'];
                 }
 
-                $robotsContent .= $fluidData['robots:follow'];
+                if(isset($fluidData['robots:follow'])) {
+                    if ($robotsContent != null && trim($robotsContent) != '') {
+                        $robotsContent .= ',';
+                    }
+
+                    $robotsContent .= $fluidData['robots:follow'];
+                }
+
+                if ($robotsContent != null && trim($robotsContent) != '') {
+                    $tags->meta('robots', $robotsContent);
+                }
             }
 
-            if ($robotsContent != null && trim($robotsContent) != '') {
-                $tags->meta('robots', $robotsContent);
-            }
+
 
             if(isset($fluidData['author'])) {
                 $tags->meta('author', $fluidData['author']);
-            }
-            if(isset($fluidData['link:author'])) {
-                $tags->link('author', $fluidData['link:author']);
-            }
-
-            if(isset($fluidData['copyright'])) {
-                $tags->meta('copyright', $fluidData['copyright']);
             }
 
             if(isset($fluidData['designer'])) {
                 $tags->meta('designer', $fluidData['designer']);
             }
-            if(isset($fluidData['link:designer'])) {
-                $tags->link('designer', $fluidData['link:designer']);
+
+            if(isset($fluidData['link']) && \is_array($fluidData['link'])) {
+                foreach ($fluidData['link'] as $key => $value) {
+                    $tags->link($key, $value);
+                }
+            } else {
+                // TODO:
+                // @deprecated
+                if(isset($fluidData['link:author'])) {
+                    $tags->link('author', $fluidData['link:author']);
+                }
+                if(isset($fluidData['link:designer'])) {
+                    $tags->link('designer', $fluidData['link:designer']);
+                }
+            }
+
+            if(isset($fluidData['copyright'])) {
+                $tags->meta('copyright', $fluidData['copyright']);
             }
 
             if (!empty($fluidData['jsonld'])) {
@@ -536,5 +618,15 @@ class PageDataHook {
      */
     public function setHTMLCodeBodyBottom($data) {
         $this->pageRenderer->addFooterData($data);
+    }
+
+    public function setOgImage(MetaTags &$tags, string $url, string $height, string $width): void {
+        $tags->og('image', $url);
+        $tags->og('image:height', $height);
+        $tags->og('image:width', $width);
+    }
+
+    public function setTwitterImage(MetaTags &$tags, string $url): void {
+        $tags->twitter('image', $url);
     }
 }

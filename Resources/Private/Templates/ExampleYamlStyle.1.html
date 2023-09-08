@@ -1,0 +1,90 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:seo="http://typo3.org/ns/HauerHeinrich/HhSeo/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+
+<f:comment>
+    ViewHelper attribute "dataType" is required to set to "yaml"!
+    It's yaml, so watch out for the indentations!
+
+    ViewHelper attribute "order" (required):
+    - A higher "order" number overwrites lower ones.
+    - Example: use <seo:metaTag order="0">...</seo:metaTag> in your theme and EXT:news use a higher number e. g. <seo:metaTag order="10">...</seo:metaTag>
+
+    ViewHelper attribute "overwrite" (optional):
+    - If overwrite="true" is set, it overwrites all previous entries completely - otherwise it merges them (default = false).
+
+    - Example for multiple images see "og:images" and for single image see "twitter:image".
+    - KEY "custom:" is requierd for custom meta-tags
+</f:comment>
+
+<hhseo:metaTag order="0" dataType="yaml">
+title: "<f:if condition="{data.seo_title}"><f:then><hhseo:formatIni data="{data.seo_title}" /></f:then><f:else><hhseo:formatIni data="{data.title}" /></f:else></f:if>"
+titleBefore: "{hhSeo.titleBefore}"
+titleAfter: "{hhSeo.titleAfter}"
+titleSeparate: "{hhSeo.titleSeparate}"
+titleSeparateBefore: "{hhSeo.titleSeparateBefore}"
+titleSeparateAfter: "{hhSeo.titleSeparateAfter}"
+
+description: "<hhseo:formatIni data="{data.description}" />"
+
+author: "{f:if(condition: '{data.author}', then: '{data.author}', else: '{hhSeo.author}')}"
+designer: "{f:if(condition: '{hhSeo.designer}', then: '{hhSeo.designer}')}"
+link:
+    designer: "/humans.txt"
+
+theme-color: "{hhSeo.themeColor}"
+shortcutIcon: "{hhSeo.shortcutIcon}"
+touchIcon: "{hhSeo.touchIcon}"
+format-detection: "{hhSeo.formatDetection}"
+last-modified: {data.SYS_LASTCHANGED}
+robots:
+    index: "<f:if condition="{data.no_index}"><f:then>noindex</f:then><f:else>index</f:else></f:if>"
+    follow: "<f:if condition="{data.no_follow}"><f:then>nofollow</f:then><f:else>follow</f:else></f:if>"
+
+
+<f:if condition="{hhSeo_slide_geoRegion} || {hhSeo_slide_geoPlacename} || ({hhSeo_slide_geoPositionLong} && {hhSeo_slide_geoPositionLat}) ">
+geo:
+    region: "{hhSeo_slide_geoRegion}"
+    placename: "{hhSeo_slide_geoPlacename}"
+    <f:if condition="{hhSeo_slide_geoPositionLong} && {hhSeo_slide_geoPositionLat}">
+    position:
+        long: "{hhSeo_slide_geoPositionLong}"
+        lat: "{hhSeo_slide_geoPositionLat}"
+    </f:if>
+</f:if>
+
+<f:if condition="{data.og_title} || {ogDescription} || {ogImage}">
+og:
+    type: "website"
+    title: "<hhseo:formatIni data="{data.og_title}" />"
+    description: "<hhseo:formatIni data="{data.og_description}" />"
+    <f:if condition="{og_image->f:count()} > 0">
+    images:
+    <f:for each="{og_image}" as="image" iteration="i">
+        - image: "{image.publicUrl}"
+          width: "{image.properties.width}"
+          height: "{image.properties.height}"
+    </f:for>
+    </f:if>
+</f:if>
+
+<f:if condition="{data.twitter_title} || {data.twitter_description} || {twitter_image.0.uid}">
+twitter:
+    card: "summary"
+    title: "<hhseo:formatIni data="{data.twitter_title}" />"
+    description: "<hhseo:formatIni data="{data.twitter_description}" />"
+    <f:if condition="{twitter_image.0.uid}">
+    images:
+        - image: {f:uri.image(src: '{twitter_image.0.uid}', treatIdAsReference: 1)}
+          alt: {twitter_image.0.alternative}
+    </f:if>
+</f:if>
+
+canonical: {data.canonical_link}
+
+custom:
+    myCustomKey: "meta content='myCustomMetaTag' name='test'"
+    otherCustomKey: "meta content='blubb ' name='test 222' /"
+</hhseo:metaTag>
+
+</html>

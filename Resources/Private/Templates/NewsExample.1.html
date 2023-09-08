@@ -31,34 +31,45 @@
     </f:if>
 </f:spaceless></f:variable>
 
-<seo:metaTag order="10" overwrite="false">
-title = News: {seoTitle}
-description = {seoDescription}
+<hhseo:metaTag order="50" dataType="yaml">
+title: "News: {seoTitle}"
+description: "<hhseo:formatIni data="{seoDescription}" />"
 
 <f:if condition="{newsItem.author}">
-author = {newsItem.author}
+author = "{newsItem.author}"
 </f:if>
 
-og:type = article
-og:title = {seoTitle}
-og:description = {seoDescription}
-<f:if condition="{newsItem.falMedia -> f:count()} > 0">
-<f:for each="{newsItem.falMedia}" as="image" iteration="i">
-<f:if condition="{image.showinpreview}">
-og:image[] = {f:uri.image(src: '{image.uid}', treatIdAsReference: 1)}
-</f:if>
-</f:for>
+<f:if condition="{data.og_title} || {ogDescription} || {ogImage}">
+og:
+    type: "article"
+    title: "<hhseo:formatIni data="{seoTitle}" />"
+    description: "<hhseo:formatIni data="{seoDescription}" />"
+    <f:if condition="{newsItem.falMedia -> f:count()} > 0">
+    images:
+    <f:for each="{newsItem.falMedia}" as="image" iteration="i">
+        <f:if condition="{image.showinpreview}">
+        - image: "{image.publicUrl}"
+          width: "{image.properties.width}"
+          height: "{image.properties.height}"
+        </f:if>
+    </f:for>
+    </f:if>
 </f:if>
 
-twitter:title = {seoTitle}
-twitter:description = {seoDescription}
-<f:if condition="{newsItem.falMedia -> f:count()} > 0">
-<f:for each="{newsItem.falMedia}" as="image" iteration="i">
-<f:if condition="{image.showinpreview}">
-twitter:image[] = {f:uri.image(src: '{image.uid}', treatIdAsReference: 1)}
+<f:if condition="{data.twitter_title} || {data.twitter_description} || {twitter_image.0.uid}">
+twitter:
+    card: "summary"
+    title: "<hhseo:formatIni data="{seoTitle}" />"
+    description: "<hhseo:formatIni data="{seoDescription}" />"
+    <f:if condition="{newsItem.falMedia -> f:count()} > 0">
+    images:
+    <f:for each="{newsItem.falMedia}" as="image" iteration="i">
+        <f:if condition="{image.showinpreview}">
+        - image: "{image.publicUrl}"
+        </f:if>
+    </f:for>
+    </f:if>
 </f:if>
-</f:for>
-</f:if>
-</seo:metaTag>
+</hhseo:metaTag>
 
 </html>
