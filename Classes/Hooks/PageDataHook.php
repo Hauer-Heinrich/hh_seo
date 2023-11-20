@@ -321,11 +321,16 @@ class PageDataHook {
                 }
             }
 
-
             $shortcutIcon = isset($fluidData['shortcutIcon']) ? $fluidData['shortcutIcon'] : false;
             if($shortcutIcon) {
-                $image = $resourceFactory->getFileObjectFromCombinedIdentifier($shortcutIcon);
-                $tags->link('shortcut icon', ltrim($this->url . $image->getPublicUrl(), '/'));
+                $shortcutIconPublicUrl = $this->resolveExtFilePathToWebUrl($shortcutIcon);
+
+                if(empty($shortcutIconPublicUrl)) {
+                    $image = $resourceFactory->getFileObjectFromCombinedIdentifier($shortcutIcon);
+                    $shortcutIconPublicUrl = $this->url . $image->getPublicUrl();
+                }
+
+                $tags->link('shortcut icon', ltrim($shortcutIconPublicUrl, '/'));
             }
 
             $touchIcon = isset($fluidData['touchIcon']) ? $fluidData['touchIcon'] : false;
@@ -628,5 +633,23 @@ class PageDataHook {
 
     public function setTwitterImage(MetaTags &$tags, string $url): void {
         $tags->twitter('image', $url);
+    }
+
+    /**
+     * resolveExtFilePathToWebUrl
+     * e. g. EXT:my_extension_key/Resources/icon.svg  => typo3conf/ext/my_extension_key/Resources/icon.svg
+     *
+     * @param  string $filePath
+     * @return string
+     */
+    public function resolveExtFilePathToWebUrl(string $filePath): string {
+        $shortcutIconPublicUrl = '';
+
+        if (strpos($filePath, 'EXT:') === 0) {
+            $absPathName = GeneralUtility::getFileAbsFileName($filePath);
+            $shortcutIconPublicUrl = str_replace(\TYPO3\CMS\Core\Core\Environment::getPublicPath().'/', '', $absPathName);
+        }
+
+        return $shortcutIconPublicUrl;
     }
 }
