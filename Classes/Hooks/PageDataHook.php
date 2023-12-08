@@ -6,6 +6,7 @@ namespace HauerHeinrich\HhSeo\Hooks;
 // use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use \TYPO3\CMS\Core\Page\PageRenderer;
+use \TYPO3\CMS\Core\Core\Environment;
 use \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use \PedroBorges\MetaTags\MetaTags;
 
@@ -334,7 +335,7 @@ class PageDataHook {
             }
 
             $touchIcon = isset($fluidData['touchIcon']) ? $fluidData['touchIcon'] : false;
-            if ($touchIcon && file_exists($touchIcon)) {
+            if ($touchIcon && file_exists(Environment::getPublicPath().$touchIcon)) {
                 $newData .= $this->setTouchIcons($touchIcon);
             }
 
