@@ -25,7 +25,7 @@ titleSeparate: "{hhSeo.titleSeparate}"
 titleSeparateBefore: "{hhSeo.titleSeparateBefore}"
 titleSeparateAfter: "{hhSeo.titleSeparateAfter}"
 
-description: "<hhseo:formatIni data="{data.description}" />"
+description: "<hhseo:formatYaml data="{data.description}" strip-tags="true" urlencode="false" />"
 
 author: "{f:if(condition: '{data.author}', then: '{data.author}', else: '{hhSeo.author}')}"
 designer: "{f:if(condition: '{hhSeo.designer}', then: '{hhSeo.designer}')}"
