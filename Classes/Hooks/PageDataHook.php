@@ -184,26 +184,23 @@ class PageDataHook {
             $resourceFactory = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
             $configurationManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
             $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-            $this->pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'];
-
-            $this->typoScriptFrontendController = $GLOBALS['TSFE'] ?? GeneralUtility::makeInstance(TypoScriptFrontendController::class);
-
-            /**
-             * @deprecated since TYPO3 11
-             */
-            if (class_exists('\\TYPO3\\CMS\\Core\\Domain\\Repository\\PageRepository', true)) {
-                $this->pageRepository = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Domain\Repository\PageRepository::class);
-            } else {
-                $this->pageRepository = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\Page\PageRepository::class);
-            }
-
             $request = $GLOBALS['TYPO3_REQUEST'];
-            $this->url = rtrim($request->getUri()->getScheme() . '://' . $request->getUri()->getHost(), '/');
 
+            $this->pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'];
+            $this->typoScriptFrontendController = $GLOBALS['TSFE'] ?? GeneralUtility::makeInstance(TypoScriptFrontendController::class);
+            $this->pageRepository = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Domain\Repository\PageRepository::class);
+            $this->url = rtrim($request->getUri()->getScheme() . '://' . $request->getUri()->getHost(), '/');
             $this->currentPageProperties = $this->pageRepository->getPage($this->typoScriptFrontendController->getRequestedId());
 
+            $metaTagManagerRegistry = GeneralUtility::makeInstance(\TYPO3\CMS\Core\MetaTag\MetaTagManagerRegistry::class);
+            // Remove generator meta-tag
+            $generatorManager = $metaTagManagerRegistry->getManagerForProperty('generator');
+            $generatorManager->removeProperty('generator');
+
             if(isset($fluidData['viewport'])) {
-                $tags->meta('viewport', $fluidData['viewport']);
+                $viewportManager = $metaTagManagerRegistry->getManagerForProperty('viewport');
+                $viewportManager->removeProperty('viewport');
+                $viewportManager->addProperty('viewport', $fluidData['viewport']);
             }
 
             if(isset($fluidData['title'])) {
@@ -213,16 +210,26 @@ class PageDataHook {
                 $titleBefore = isset($fluidData['titleBefore']) ? $fluidData['titleBefore'] . $separateBefore : '';
                 $titleAfter = isset($fluidData['titleAfter']) ? $separateAfter . $fluidData['titleAfter'] : '';
                 $title = $titleBefore . $fluidData['title'] . $titleAfter;
+                // outputs <title>...</title>
                 $tags->title($title);
+                // outputs <meta name="title" ...
+                // $titleManager = $metaTagManagerRegistry->getManagerForProperty('title');
+                // $titleManager->removeProperty('title');
+                // $titleManager->addProperty('title', $title);
             }
 
             if(isset($fluidData['keywords'])) {
-                $tags->meta('keywords', $fluidData['keywords']);
+                $keywordsManager = $metaTagManagerRegistry->getManagerForProperty('keywords');
+                $keywordsManager->removeProperty('keywords');
+                $keywordsManager->addProperty('keywords', $fluidData['keywords']);
             }
 
             if(isset($fluidData['description'])) {
-                $tags->meta('description', $fluidData['description']);
+                $descriptionManager = $metaTagManagerRegistry->getManagerForProperty('description');
+                $descriptionManager->removeProperty('description');
+                $descriptionManager->addProperty('description', $fluidData['description']);
             }
+
 
             if(isset($fluidData['og']) && \is_array($fluidData['og'])) {
                 foreach ($fluidData['og'] as $key => $value) {
@@ -254,19 +261,6 @@ class PageDataHook {
                 }
             }
 
-            // TODO:
-            // @deprecated
-            $ogImage = isset($fluidData['og:image']) ? $fluidData['og:image'] : null;
-            if(\is_string($ogImage)) {
-                if(filter_var($ogImage, FILTER_VALIDATE_URL)) {
-                    $tags->og('image', $ogImage);
-                    $ogImageHeight = isset($fluidData['og:image:height']) ? $fluidData['og:image:height'] : false;
-                    $ogImageWidth = isset($fluidData['og:image:width']) ? $fluidData['og:image:width'] : false;
-                    $tags->og('image:width', $ogImageWidth);
-                    $tags->og('image:height', $ogImageHeight);
-                }
-            }
-
             if(isset($fluidData['twitter']) && \is_array($fluidData['twitter'])) {
                 foreach ($fluidData['twitter'] as $key => $value) {
                     if($key === 'images' && \is_array($value)) {
@@ -289,36 +283,6 @@ class PageDataHook {
                     }
 
                     $tags->twitter($key, $value);
-                }
-
-            } else {
-                // TODO:
-                // @deprecated
-                if (isset($fluidData['twitter:card'])) {
-                    $tags->twitter('card', $fluidData['twitter:card']);
-                } else {
-                    $tags->twitter('card', 'summary');
-                }
-
-                if(isset($fluidData['twitter:title'])) {
-                    $tags->twitter('title', $fluidData['twitter:title']);
-                }
-
-                if(isset($fluidData['twitter:description'])) {
-                    $tags->twitter('description', $fluidData['twitter:description']);
-                }
-
-                $twitterImage = isset($fluidData['twitter:image']) ? $fluidData['twitter:image'] : false;
-                if($twitterImage) {
-                    if(is_array($twitterImage)) {
-                        foreach ($twitterImage as $value) {
-                            $file = $resourceFactory->getFileObjectFromCombinedIdentifier($value);
-                            $tags->twitter('image', ltrim($this->url . $file->getPublicUrl(), '/'));
-                        }
-                    } else {
-                        $file = $resourceFactory->getFileObjectFromCombinedIdentifier($twitterImage);
-                        $tags->twitter('image', ltrim($this->url . $file->getPublicUrl(), '/'));
-                    }
                 }
             }
 
@@ -371,68 +335,16 @@ class PageDataHook {
 
                     $tags->meta('geo:'.$key, $value);
                 }
-            } else {
-                // TODO:
-                // @deprecated
-                if(isset($fluidData['geo:region'])) {
-                    $tags->meta('geo:region', $fluidData['geo:region']);
-                }
-
-                if(isset($fluidData['geo:placename'])) {
-                    $tags->meta('geo:placename', $fluidData['geo:placename']);
-                }
-
-                if(isset($fluidData['geo:position:long']) && isset($fluidData['geo:position:lat'])) {
-                    $pos = $fluidData['geo:position:long'] . ';' . $fluidData['geo:position:lat'];
-                    $icbm = $fluidData['geo:position:long'] . ', ' . $fluidData['geo:position:lat'];
-                    $tags->meta('geo:position', $pos);
-                    $tags->meta('ICBM', $icbm);
-                }
             }
 
-            // Custom
-            if(isset($fluidData['custom']) && \is_array($fluidData['custom'])) {
-                $newData .= $this->setCustomTags($fluidData['custom']);
-            }
-
-            // Robots
-            if(isset($fluidData['robots']) && \is_array($fluidData['robots'])) {
-                $robotsContent = '';
-                foreach ($fluidData['robots'] as $key => $value) {
-                    $robotsContent .= $value;
-
-                    if ($key !== array_key_last($fluidData['robots'])) {
-                        $robotsContent .= ', ';
-                    }
-                }
-                $tags->meta('robots', $robotsContent);
-            } else {
-                // TODO:
-                // @deprecated
-                $robotsContent = '';
-                if(isset($fluidData['robots:index'])) {
-                    $robotsContent = $fluidData['robots:index'];
-                }
-
-                if(isset($fluidData['robots:follow'])) {
-                    if ($robotsContent != null && trim($robotsContent) != '') {
-                        $robotsContent .= ',';
-                    }
-
-                    $robotsContent .= $fluidData['robots:follow'];
-                }
-
-                if ($robotsContent != null && trim($robotsContent) != '') {
-                    $tags->meta('robots', $robotsContent);
-                }
-            }
-
-
-
+            // Author
             if(isset($fluidData['author'])) {
-                $tags->meta('author', $fluidData['author']);
+                $authorManager = $metaTagManagerRegistry->getManagerForProperty('author');
+                $authorManager->removeProperty('author');
+                $authorManager->addProperty('author', $fluidData['author']);
             }
 
+            // Designer
             if(isset($fluidData['designer'])) {
                 $tags->meta('designer', $fluidData['designer']);
             }
@@ -441,22 +353,37 @@ class PageDataHook {
                 foreach ($fluidData['link'] as $key => $value) {
                     $tags->link($key, $value);
                 }
-            } else {
-                // TODO:
-                // @deprecated
-                if(isset($fluidData['link:author'])) {
-                    $tags->link('author', $fluidData['link:author']);
-                }
-                if(isset($fluidData['link:designer'])) {
-                    $tags->link('designer', $fluidData['link:designer']);
-                }
             }
 
             if(isset($fluidData['copyright'])) {
                 $tags->meta('copyright', $fluidData['copyright']);
             }
 
-            if (!empty($fluidData['jsonld'])) {
+            // Robots
+            $robotsManager = $metaTagManagerRegistry->getManagerForProperty('robots');
+            $robotsManager->removeProperty('robots');
+
+            $robots = [];
+            if(isset($fluidData['robots:noimageindex']) && ($fluidData['robots:noimageindex'] === 1 || $fluidData['robots:noimageindex'] === 'noimageindex')) {
+                $robots[] = 'noimageindex';
+            }
+            if(isset($fluidData['robots:noarchive']) && ($fluidData['robots:noarchive'] === 1 || $fluidData['robots:noarchive'] === 'noarchive')) {
+                $robots[] = 'noarchive';
+            }
+            if(isset($fluidData['robots:nosnippet']) && ($fluidData['robots:nosnippet'] === 1 || $fluidData['robots:nosnippet'] === 'nosnippet')) {
+                $robots[] = 'nosnippet';
+            }
+            $robots[] = (isset($fluidData['robots:index']) && ($fluidData['robots:index'] === 1 || $fluidData['robots:index'] === 'noindex')) ? 'noindex' : 'index';
+            $robots[] = (isset($fluidData['robots:follow']) && ($fluidData['robots:follow'] === 1 || $fluidData['robots:follow'] === 'nofollow')) ? 'nofollow' : 'follow';
+
+            $robotsManager->addProperty('robots', implode(',', $robots));
+
+            // Custom
+            if(isset($fluidData['custom']) && \is_array($fluidData['custom'])) {
+                $newData .= $this->setCustomTags($fluidData['custom']);
+            }
+
+            if (isset($fluidData['jsonld']) && !empty($fluidData['jsonld'])) {
                 $tags->jsonld($fluidData['jsonld']);
             }
 
