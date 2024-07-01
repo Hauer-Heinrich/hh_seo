@@ -40,6 +40,9 @@ last-modified: {data.SYS_LASTCHANGED}
 robots:
     index: "<f:if condition="{data.no_index}"><f:then>noindex</f:then><f:else>index</f:else></f:if>"
     follow: "<f:if condition="{data.no_follow}"><f:then>nofollow</f:then><f:else>follow</f:else></f:if>"
+    noimageindex: "{f:if(condition: '{data.noimageindex}', then: 'noimageindex')}"
+    noarchive: "{f:if(condition: '{data.noarchive}', then: 'noarchive')}"
+    nosnippet: "{f:if(condition: '{data.nosnippet}', then: 'nosnippet')}"
 
 
 <f:if condition="{hhSeo_slide_geoRegion} || {hhSeo_slide_geoPlacename} || ({hhSeo_slide_geoPositionLong} && {hhSeo_slide_geoPositionLat}) ">

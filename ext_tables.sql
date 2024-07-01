@@ -9,4 +9,8 @@ CREATE TABLE pages (
     geo_placename varchar(255) DEFAULT '' NOT NULL,
     geo_position_long varchar(255) DEFAULT '' NOT NULL,
     geo_position_lat varchar(255) DEFAULT '' NOT NULL,
+
+    noimageindex tinyint(4) DEFAULT '0' NOT NULL,
+    noarchive tinyint(4) DEFAULT '0' NOT NULL,
+    nosnippet tinyint(4) DEFAULT '0' NOT NULL,
 );

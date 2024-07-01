@@ -364,17 +364,33 @@ class PageDataHook {
             $robotsManager->removeProperty('robots');
 
             $robots = [];
-            if(isset($fluidData['robots:noimageindex']) && ($fluidData['robots:noimageindex'] === 1 || $fluidData['robots:noimageindex'] === 'noimageindex')) {
-                $robots[] = 'noimageindex';
+            if(isset($fluidData['robots']) && \is_array($fluidData['robots'])) {
+                $robotsArray = $fluidData['robots'];
+                if(isset($robotsArray['noimageindex']) && ($robotsArray['noimageindex'] === 1 || $robotsArray['noimageindex'] === 'noimageindex')) {
+                    $robots[] = 'noimageindex';
+                }
+                if(isset($robotsArray['noarchive']) && ($robotsArray['noarchive'] === 1 || $robotsArray['noarchive'] === 'noarchive')) {
+                    $robots[] = 'noarchive';
+                }
+                if(isset($robotsArray['nosnippet']) && ($robotsArray['nosnippet'] === 1 || $robotsArray['nosnippet'] === 'nosnippet')) {
+                    $robots[] = 'nosnippet';
+                }
+                $robots[] = (isset($robotsArray['index']) && ($robotsArray['index'] === 1 || $robotsArray['index'] === 'noindex')) ? 'noindex' : 'index';
+                $robots[] = (isset($robotsArray['follow']) && ($robotsArray['follow'] === 1 || $robotsArray['follow'] === 'nofollow')) ? 'nofollow' : 'follow';
+            } else {
+                // @deprecated version
+                if(isset($fluidData['robots:noimageindex']) && ($fluidData['robots:noimageindex'] === 1 || $fluidData['robots:noimageindex'] === 'noimageindex')) {
+                    $robots[] = 'noimageindex';
+                }
+                if(isset($fluidData['robots:noarchive']) && ($fluidData['robots:noarchive'] === 1 || $fluidData['robots:noarchive'] === 'noarchive')) {
+                    $robots[] = 'noarchive';
+                }
+                if(isset($fluidData['robots:nosnippet']) && ($fluidData['robots:nosnippet'] === 1 || $fluidData['robots:nosnippet'] === 'nosnippet')) {
+                    $robots[] = 'nosnippet';
+                }
+                $robots[] = (isset($fluidData['robots:index']) && ($fluidData['robots:index'] === 1 || $fluidData['robots:index'] === 'noindex')) ? 'noindex' : 'index';
+                $robots[] = (isset($fluidData['robots:follow']) && ($fluidData['robots:follow'] === 1 || $fluidData['robots:follow'] === 'nofollow')) ? 'nofollow' : 'follow';
             }
-            if(isset($fluidData['robots:noarchive']) && ($fluidData['robots:noarchive'] === 1 || $fluidData['robots:noarchive'] === 'noarchive')) {
-                $robots[] = 'noarchive';
-            }
-            if(isset($fluidData['robots:nosnippet']) && ($fluidData['robots:nosnippet'] === 1 || $fluidData['robots:nosnippet'] === 'nosnippet')) {
-                $robots[] = 'nosnippet';
-            }
-            $robots[] = (isset($fluidData['robots:index']) && ($fluidData['robots:index'] === 1 || $fluidData['robots:index'] === 'noindex')) ? 'noindex' : 'index';
-            $robots[] = (isset($fluidData['robots:follow']) && ($fluidData['robots:follow'] === 1 || $fluidData['robots:follow'] === 'nofollow')) ? 'nofollow' : 'follow';
 
             $robotsManager->addProperty('robots', implode(',', $robots));
 

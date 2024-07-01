@@ -3,6 +3,7 @@
     <file source-language="en" datatype="plaintext" original="messages" date="2019-04-03T17:00:16Z" product-name="hh_seo">
         <header/>
         <body>
+
             <trans-unit id="pages.html_head">
                 <source>Analytics Code in HTML Head</source>
             </trans-unit>
@@ -24,6 +25,17 @@
             <trans-unit id="pages.geo_position_lat">
                 <source>Geo latitude</source>
             </trans-unit>
+
+            <trans-unit id="pages.noimageindex">
+                <source>Image index</source>
+            </trans-unit>
+            <trans-unit id="pages.noarchive">
+                <source>Archive</source>
+            </trans-unit>
+            <trans-unit id="pages.nosnippet">
+                <source>Snippet</source>
+            </trans-unit>
+
         </body>
     </file>
 </xliff>
