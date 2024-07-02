@@ -10,6 +10,9 @@ $fields = [
             'type' => 'text',
             'default' => '',
             'eval' => 'trim',
+            'behaviour' => [
+                'allowLanguageSynchronization' => true
+            ],
         ],
     ],
     'html_body_top' => [
@@ -19,6 +22,9 @@ $fields = [
             'type' => 'text',
             'default' => '',
             'eval' => 'trim',
+            'behaviour' => [
+                'allowLanguageSynchronization' => true
+            ],
         ],
     ],
     'html_body_bottom' => [
@@ -28,6 +34,9 @@ $fields = [
             'type' => 'text',
             'default' => '',
             'eval' => 'trim',
+            'behaviour' => [
+                'allowLanguageSynchronization' => true
+            ],
         ],
     ],
     'geo_region' => [
@@ -35,7 +44,10 @@ $fields = [
         'exclude' => 1,
         'config' => [
             'type' => 'input',
-            'max' => 100
+            'max' => 100,
+            'behaviour' => [
+                'allowLanguageSynchronization' => true
+            ],
         ],
     ],
     'geo_placename' => [
@@ -43,7 +55,10 @@ $fields = [
         'label' => 'LLL:EXT:hh_seo/Resources/Private/Language/locallang_db.xlf:pages.geo_placename',
         'config' => [
             'type' => 'input',
-            'max' => 100
+            'max' => 100,
+            'behaviour' => [
+                'allowLanguageSynchronization' => true
+            ],
         ]
     ],
     'geo_position_long' => [
@@ -51,7 +66,10 @@ $fields = [
         'label' => 'LLL:EXT:hh_seo/Resources/Private/Language/locallang_db.xlf:pages.geo_position_long',
         'config' => [
             'type' => 'input',
-            'max' => 100
+            'max' => 100,
+            'behaviour' => [
+                'allowLanguageSynchronization' => true
+            ],
         ]
     ],
     'geo_position_lat' => [
@@ -59,7 +77,10 @@ $fields = [
         'label' => 'LLL:EXT:hh_seo/Resources/Private/Language/locallang_db.xlf:pages.geo_position_lat',
         'config' => [
             'type' => 'input',
-            'max' => 100
+            'max' => 100,
+            'behaviour' => [
+                'allowLanguageSynchronization' => true
+            ],
         ],
     ],
     'noimageindex' => [
@@ -73,6 +94,9 @@ $fields = [
                     'label' => '',
                     'invertStateDisplay' => true,
                 ],
+            ],
+            'behaviour' => [
+                'allowLanguageSynchronization' => true
             ],
         ],
     ],
@@ -88,6 +112,9 @@ $fields = [
                     'invertStateDisplay' => true,
                 ],
             ],
+            'behaviour' => [
+                'allowLanguageSynchronization' => true
+            ],
         ],
     ],
     'nosnippet' => [
@@ -101,6 +128,9 @@ $fields = [
                     'label' => '',
                     'invertStateDisplay' => true,
                 ],
+            ],
+            'behaviour' => [
+                'allowLanguageSynchronization' => true
             ],
         ],
     ],
