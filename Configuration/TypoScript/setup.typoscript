@@ -32,6 +32,15 @@ page {
         abstract >
         author >
         keywords >
+
+        og:type >
+        og:site_name >
+        og:image >
+
+        twitter:card >
+        twitter:creator >
+        twitter:site >
+        twitter:image >
     }
 }
 
