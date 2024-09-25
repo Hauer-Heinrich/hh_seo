@@ -7,66 +7,20 @@ namespace HauerHeinrich\HhSeo\Hooks;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use \TYPO3\CMS\Core\Page\PageRenderer;
 use \TYPO3\CMS\Core\Core\Environment;
+use \TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use \PedroBorges\MetaTags\MetaTags;
 
 class PageDataHook {
+    protected PageRenderer $pageRenderer;
+    protected TypoScriptFrontendController $typoScriptFrontendController;
+    protected PageRepository $pageRepository;
 
-    /**
-     * pageRenderer
-     *
-     * @var TYPO3\\CMS\\Core\\Page\\PageRenderer
-     */
-    protected $pageRenderer;
-
-    /**
-     * typoScriptFrontendController
-     *
-     * @var TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController
-     */
-    protected $typoScriptFrontendController;
-
-    /**
-     * pageRepository
-     *
-     * @var PageRepository
-     */
-    protected $pageRepository;
-
-    /**
-     * currentPageProperties
-     *
-     * @var array
-     */
-    protected $currentPageProperties = [];
-
-    /**
-     * pluginSettings
-     *
-     * @var array
-     */
-    protected $pluginSettings = [];
-
-    /**
-     * additionalData
-     *
-     * @var array
-     */
-    protected $additionalData = [];
-
-    /**
-     * url
-     *
-     * @var string
-     */
-    protected $url = '';
-
-    /**
-     * currentPageUid
-     *
-     * @var int
-     */
-    protected $currentPageUid = 0;
+    protected array $currentPageProperties = [];
+    protected array $pluginSettings = [];
+    protected array $additionalData = [];
+    protected string $url = '';
+    protected int $currentPageUid = 0;
 
     public function __construct() {
         $this->currentPageUid = isset($GLOBALS['TSFE']->id) ? $GLOBALS['TSFE']->id : 1;
@@ -106,11 +60,8 @@ class PageDataHook {
 
     /**
      * addPageData
-     *
-     * @param array $parameters
-     * @return string
     */
-    public function addPageData(&$parameters = null) {
+    public function addPageData(array &$parameters = null): void {
         $contentObjectRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::class);
         $htmlHead = $contentObjectRenderer->getData('levelfield : -1, html_head, slide');
         $htmlBodyTop = $contentObjectRenderer->getData('levelfield : -1, html_body_top, slide');
@@ -130,7 +81,7 @@ class PageDataHook {
 
         // no meta tags set via FLUID
         if(empty($this->additionalData)) {
-            return '';
+            return;
         }
         $metaTag = $this->additionalData['MetaTag'];
 
@@ -188,7 +139,7 @@ class PageDataHook {
 
             $this->pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'];
             $this->typoScriptFrontendController = $GLOBALS['TSFE'] ?? GeneralUtility::makeInstance(TypoScriptFrontendController::class);
-            $this->pageRepository = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Domain\Repository\PageRepository::class);
+            $this->pageRepository = GeneralUtility::makeInstance(PageRepository::class);
             $this->url = rtrim($request->getUri()->getScheme() . '://' . $request->getUri()->getHost(), '/');
             $this->currentPageProperties = $this->pageRepository->getPage($this->typoScriptFrontendController->getRequestedId());
 
@@ -229,7 +180,6 @@ class PageDataHook {
                 $descriptionManager->removeProperty('description');
                 $descriptionManager->addProperty('description', $fluidData['description']);
             }
-
 
             if(isset($fluidData['og']) && \is_array($fluidData['og'])) {
                 foreach ($fluidData['og'] as $key => $value) {
@@ -525,14 +475,10 @@ class PageDataHook {
 
     /**
      * Set your custom meta-tags
-     *
-     * @param array $customMetaTags
-     *
-     * @return void
      */
-    public function setCustomTags($customMetaTags): string {
+    public function setCustomTags(array $customMetaTags): string {
         $custom = '';
-        foreach ($customMetaTags as $key => $value) {
+        foreach ($customMetaTags as $value) {
             $custom .= '<'.$value.'>';
         }
 
@@ -541,19 +487,15 @@ class PageDataHook {
 
     /**
      * Set your custom HTML Code
-     *
-     * @param string $data
      */
-    public function setHTMLCodeHead($data) {
+    public function setHTMLCodeHead(string $data): void {
         $this->pageRenderer->addHeaderData($data);
     }
 
     /**
      * Set your custom HTML Code
-     *
-     * @param string $data
      */
-    public function setHTMLCodeBodyTop($data) {
+    public function setHTMLCodeBodyTop(string $data): void {
         $bodyContent = $this->pageRenderer->getBodyContent();
         if(!empty($bodyContent)) {
             $this->pageRenderer->setBodyContent(substr_replace($bodyContent, $data, 1+strpos($bodyContent, '>'), 0));
@@ -562,10 +504,8 @@ class PageDataHook {
 
     /**
      * Set your custom HTML Code
-     *
-     * @param string $data
      */
-    public function setHTMLCodeBodyBottom($data) {
+    public function setHTMLCodeBodyBottom(string $data): void {
         $this->pageRenderer->addFooterData($data);
     }
 
@@ -582,9 +522,6 @@ class PageDataHook {
     /**
      * resolveExtFilePathToWebUrl
      * e. g. EXT:my_extension_key/Resources/icon.svg  => typo3conf/ext/my_extension_key/Resources/icon.svg
-     *
-     * @param  string $filePath
-     * @return string
      */
     public function resolveExtFilePathToWebUrl(string $filePath): string {
         $shortcutIconPublicUrl = '';

@@ -7,7 +7,7 @@ namespace HauerHeinrich\HhSeo\EventListener;
 
 class EventModifyUrlForCanonicalTag {
 
-    protected array $additionalData;
+    protected array $additionalData = [];
 
     public function __construct() {
         $this->additionalData = isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']) ? $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'] : [];
