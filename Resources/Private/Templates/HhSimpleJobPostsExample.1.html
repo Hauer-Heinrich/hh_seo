@@ -1,0 +1,36 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:ttaddr="http://typo3.org/ns/FriendsOfTYPO3/TtAddress/ViewHelpers"
+    xmlns:seo="http://typo3.org/ns/HauerHeinrich/HhSeo/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+
+<hhseo:metaTag order="40" dataType="yaml">
+title: <seo:formatIni data="{jobpost.title}" strip-tags="true" urlencode="true" />
+description: <seo:formatIni urlencode="true"><f:format.crop maxCharacters="155" append="..."><f:format.stripTags>{jobpost.description}</f:format.stripTags></f:format.crop></seo:formatIni>
+last-modified: {f:format.date(date: '{jobpost.tstamp}', format: 'r')}
+
+og:
+    title: <hhseo:formatIni data="{jobpost.ogTitle}" />
+    description: <hhseo:formatIni data="{jobpost.ogDescription}" />
+    image: <f:if condition="{jobpost.ogImage.0}">{f:uri.image(src: '{jobpost.ogImage.0.uid}', treatIdAsReference: 1)}</f:if>
+    <f:if condition="{jobpost.ogImage -> f:count()} > 0">
+    images:
+    <f:for each="{newsItem.falMedia}" as="imageog">
+        - image: "{imageog.publicUrl}"
+          width: "{imageog.properties.width}"
+          height: "{imageog.properties.height}"
+    </f:for>
+    </f:if>
+
+twitter:
+    card: "{jobpost.twitterCard}"
+    title: "<hhseo:formatIni data="{jobpost.twitterTitle}" />"
+    description: "<hhseo:formatIni data="{jobpost.twitterDescription}" />"
+    <f:if condition="{jobpost.twitterImage -> f:count()} > 0">
+    images:
+    <f:for each="{jobpost.twitterImage}" as="imagetw">
+        - image: "{imagetw.publicUrl}"
+    </f:for>
+    </f:if>
+</hhseo:metaTag>
+
+</html>
