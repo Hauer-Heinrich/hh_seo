@@ -1,7 +1,17 @@
 <?php
 defined('TYPO3') || die('Access denied.');
 
+use \TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
 call_user_func(function() {
+    if(
+        !ExtensionManagementUtility::isLoaded('cs_seo')
+        && !ExtensionManagementUtility::isLoaded('yoast_seo')
+    ) {
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/db_layout.php']['drawHeaderHook'][]
+            = \HauerHeinrich\HhSeo\Backend\PageLayoutHeader::class . '->render';
+    }
+
     // deactivate ext:seo Meta-Tag generation
     // $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags'] = [];
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags']['metatag'] = [];

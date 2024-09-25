@@ -1,0 +1,24 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:seo="http://typo3.org/ns/HauerHeinrich/HhSeo/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+
+<f:asset.css identifier="hh-seo--backend-header" href="EXT:hh_seo/Resources/Public/Css/Backend/header.css" />
+
+<section class="hh-seo hh-seo-header">
+    <div class="container">
+        <div class="preview-snippet">
+            <div class="footer">
+                <span class="favicon">
+                    <img src="{previewUri.scheme}://{previewUri.host}{shortcutIcon}" alt="Favicon is missing!" />
+                </span>
+                <span class="url">{previewUri.scheme}://{previewUri.host}{previewUri.path}</span> <span class="dots"><svg focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></span>
+            </div>
+            <span class="title">{f:if(condition: '{data.seo_title}', then: '{data.seo_title}', else: '{data.title}')}</span><br />
+            <span class="description">
+                <f:format.crop maxCharacters="155" append="..." respectWordBoundaries="1" respectHtml="1">{f:if(condition: '{data.description}', then: '{data.description}', else: 'Please provide a meta description!')}</f:format.crop>
+            </span>
+        </div>
+    </div>
+</section>
+
+</html>

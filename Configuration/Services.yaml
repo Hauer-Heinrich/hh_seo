@@ -13,3 +13,12 @@ services:
         identifier: 'hh-seo/ModifyUrlForCanonicalTag'
         before: 'typo3-seo/hreflangGenerator'
         event: TYPO3\CMS\Seo\Event\ModifyUrlForCanonicalTagEvent
+
+  HauerHeinrich\HhSeo\Backend\ModifyPageLayoutContentListener:
+    tags:
+      - name: event.listener
+        identifier: 'hh-seo/backend/modify-page-module-content'
+        event: TYPO3\CMS\Backend\Controller\Event\ModifyPageLayoutContentEvent
+
+  HauerHeinrich\HhSeo\Backend\PageLayoutHeader:
+    public: true
