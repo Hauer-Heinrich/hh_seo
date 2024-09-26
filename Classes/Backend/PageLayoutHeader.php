@@ -19,6 +19,10 @@ class PageLayoutHeader {
         $pageId = (int)GeneralUtility::_GET('id');
         $currentPage = $this->getCurrentPage($pageId, $languageId, $parentObj);
 
+        if(isset($currentPage['doktype']) && $currentPage['doktype'] !== 1) {
+            return '';
+        }
+
         $previewUri = \TYPO3\CMS\Backend\Routing\PreviewUriBuilder::create($pageId)
             ->withLanguage($languageId ?? 0)
             ->buildUri();
