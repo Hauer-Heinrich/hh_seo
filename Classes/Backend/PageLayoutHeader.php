@@ -113,15 +113,17 @@ class PageLayoutHeader {
     public function resolveExtFilePathToWebUrl(string $filePath): string {
         $shortcutIconPublicUrl = '';
 
-        if (strpos($filePath, 'EXT:') === 0) {
-            $absPathName = GeneralUtility::getFileAbsFileName($filePath);
-            $shortcutIconPublicUrl = str_replace(\TYPO3\CMS\Core\Core\Environment::getPublicPath().'/', '', $absPathName);
-        }
+        if(!empty($filePath)) {
+            if (strpos($filePath, 'EXT:') === 0) {
+                $absPathName = GeneralUtility::getFileAbsFileName($filePath);
+                $shortcutIconPublicUrl = str_replace(\TYPO3\CMS\Core\Core\Environment::getPublicPath().'/', '', $absPathName);
+            }
 
-        if(empty($shortcutIconPublicUrl)) {
-            $resourceFactory = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
-            $image = $resourceFactory->getFileObjectFromCombinedIdentifier($filePath);
-            $shortcutIconPublicUrl = $image->getPublicUrl();
+            if(empty($shortcutIconPublicUrl)) {
+                $resourceFactory = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
+                $image = $resourceFactory->getFileObjectFromCombinedIdentifier($filePath);
+                $shortcutIconPublicUrl = $image->getPublicUrl();
+            }
         }
 
         return $shortcutIconPublicUrl;
