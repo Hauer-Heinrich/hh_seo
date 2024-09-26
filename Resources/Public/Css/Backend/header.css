@@ -59,5 +59,18 @@
             align-items: center;
             gap: 12px;
         }
+
+        &[data-favicon="false"] {
+            & .favicon {
+                color: red;
+                width: 110px;
+            }
+        }
+
+        &[data-description="false"] {
+            & .description {
+                color: orange;
+            }
+        }
     }
 }

@@ -6,10 +6,20 @@
 
 <section class="hh-seo hh-seo-header">
     <div class="container">
-        <div class="preview-snippet">
+        <div class="preview-snippet"
+            data-favicon="{f:if(condition: '{shortcutIcon}', then: 'true', else: 'false')}"
+            data-description="{f:if(condition: '{data.description}', then: 'true', else: 'false')}"
+        >
             <div class="footer">
                 <span class="favicon">
-                    <img src="{previewUri.scheme}://{previewUri.host}{shortcutIcon}" alt="Favicon is missing!" />
+                    <f:if condition="{shortcutIcon}">
+                        <f:then>
+                            <img src="{previewUri.scheme}://{previewUri.host}{shortcutIcon}" alt="Favicon is missing!" />
+                        </f:then>
+                        <f:else>
+                            Favicon is missing!
+                        </f:else>
+                    </f:if>
                 </span>
                 <span class="url">{previewUri.scheme}://{previewUri.host}{previewUri.path}</span> <span class="dots"><svg focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></span>
             </div>
