@@ -118,7 +118,11 @@ class PageLayoutHeader {
         $shortcutIconPublicUrl = '';
 
         if(!empty($filePath)) {
-            if (strpos($filePath, 'EXT:') === 0) {
+            if(filter_var($filePath, FILTER_VALIDATE_URL)) {
+                $shortcutIconPublicUrl = trim($filePath);
+            }
+
+            if(str_starts_with($filePath, 'EXT:')) {
                 $absPathName = GeneralUtility::getFileAbsFileName($filePath);
                 $shortcutIconPublicUrl = str_replace(\TYPO3\CMS\Core\Core\Environment::getPublicPath().'/', '', $absPathName);
             }
