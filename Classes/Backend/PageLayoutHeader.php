@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HauerHeinrich\HhSeo\Backend;
 
+
+use \Psr\Http\Message\ServerRequestInterface;
 // use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use \TYPO3\CMS\Backend\Controller\PageLayoutController;
 use \TYPO3\CMS\Backend\Template\ModuleTemplate;
@@ -16,14 +18,14 @@ class PageLayoutHeader {
 
     public function render(array $params = null, $parentObj = null): string {
         $languageId = $this->getLanguageId();
-        $pageId = (int)GeneralUtility::_GET('id');
-        $currentPage = $this->getCurrentPage($pageId, $languageId, $parentObj);
+        $selectedPageUid = (int)$this->getRequest()->getQueryParams()['id'] ?? 0;
+        $currentPage = $this->getCurrentPage($selectedPageUid, $languageId, $parentObj);
 
         if(isset($currentPage['doktype']) && $currentPage['doktype'] !== 1) {
             return '';
         }
 
-        $previewUri = \TYPO3\CMS\Backend\Routing\PreviewUriBuilder::create($pageId)
+        $previewUri = \TYPO3\CMS\Backend\Routing\PreviewUriBuilder::create($selectedPageUid)
             ->withLanguage($languageId ?? 0)
             ->buildUri();
 
@@ -33,7 +35,7 @@ class PageLayoutHeader {
 
         $configurationManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
         $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-        $pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'];
+        $pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'] ?? null;
 
         $options = [
             'data' => $currentPage,
@@ -135,5 +137,9 @@ class PageLayoutHeader {
         }
 
         return $shortcutIconPublicUrl;
+    }
+
+    private function getRequest(): ServerRequestInterface {
+        return $GLOBALS['TYPO3_REQUEST'];
     }
 }

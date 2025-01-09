@@ -141,7 +141,7 @@ class PageDataHook {
             $this->typoScriptFrontendController = $GLOBALS['TSFE'] ?? GeneralUtility::makeInstance(TypoScriptFrontendController::class);
             $this->pageRepository = GeneralUtility::makeInstance(PageRepository::class);
             $this->url = rtrim($request->getUri()->getScheme() . '://' . $request->getUri()->getHost(), '/');
-            $this->currentPageProperties = $this->pageRepository->getPage($this->typoScriptFrontendController->getRequestedId());
+            $this->currentPageProperties = $this->pageRepository->getPage($request->getAttribute('routing')->getPageId());
 
             $metaTagManagerRegistry = GeneralUtility::makeInstance(\TYPO3\CMS\Core\MetaTag\MetaTagManagerRegistry::class);
             // Remove generator meta-tag
