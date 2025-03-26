@@ -19,9 +19,11 @@ call_user_func(function() {
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags']['metatag'] =
         \HauerHeinrich\HhSeo\Hooks\PageDataHook::class . '->addPageData';
 
-    $rootLineFields = &$GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'];
-    if (trim($rootLineFields) != "") $rootLineFields .= ',';
-    $rootLineFields .= 'html_head,html_body_top,html_body_bottom,geo_region,geo_placename,geo_position_long,geo_position_lat,og_image,twitter_image';
+    $versionInformation = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Information\Typo3Version::class);
+    // TODO: Remove when dropping TYPO3 v12 support
+    if ($versionInformation->getMajorVersion() < 13) {
+        $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] .= ',html_head,html_body_top,html_body_bottom,geo_region,geo_placename,geo_position_long,geo_position_lat,og_image,twitter_image';
+    }
 
     // Register 'hhseo' as global fluid namespace
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']['hhseo'] = ['HauerHeinrich\\HhSeo\\ViewHelpers'];
