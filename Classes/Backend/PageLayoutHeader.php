@@ -122,6 +122,8 @@ class PageLayoutHeader {
         if(!empty($filePath)) {
             if(filter_var($filePath, FILTER_VALIDATE_URL)) {
                 $shortcutIconPublicUrl = trim($filePath);
+
+                return $shortcutIconPublicUrl;
             }
 
             if(str_starts_with($filePath, 'EXT:')) {
@@ -134,6 +136,10 @@ class PageLayoutHeader {
                 $image = $resourceFactory->getFileObjectFromCombinedIdentifier($filePath);
                 $shortcutIconPublicUrl = $image->getPublicUrl();
             }
+        }
+
+        if(!empty($shortcutIconPublicUrl) && !\str_starts_with($shortcutIconPublicUrl, '/')) {
+            $shortcutIconPublicUrl = '/'.$shortcutIconPublicUrl;
         }
 
         return $shortcutIconPublicUrl;
