@@ -61,7 +61,7 @@ class PageDataHook {
     /**
      * addPageData
     */
-    public function addPageData(array &$parameters = null): void {
+    public function addPageData(array &$parameters = []): void {
         $contentObjectRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::class);
         $htmlHead = $contentObjectRenderer->getData('levelfield : -1, html_head, slide');
         $htmlBodyTop = $contentObjectRenderer->getData('levelfield : -1, html_body_top, slide');
