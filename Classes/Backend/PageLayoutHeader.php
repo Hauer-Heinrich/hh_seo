@@ -16,7 +16,7 @@ class PageLayoutHeader {
     public function __construct() {
     }
 
-    public function render(array $params = null, $parentObj = null): string {
+    public function render(array $params = [], $parentObj = null): string {
         $languageId = $this->getLanguageId();
         $selectedPageUid = (int)$this->getRequest()->getQueryParams()['id'] ?? 0;
         $currentPage = $this->getCurrentPage($selectedPageUid, $languageId, $parentObj);
