@@ -1,7 +1,7 @@
 ################################################################
 ### TYPO3 SEO - sitemap ###
 ################################################################
-<INCLUDE_TYPOSCRIPT: source="FILE:EXT:seo/Configuration/TypoScript/XmlSitemap/setup.typoscript">
+@import 'EXT:seo/Configuration/TypoScript/XmlSitemap/setup.typoscript'
 plugin.tx_seo {
     config {
         xmlSitemap {

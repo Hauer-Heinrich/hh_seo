@@ -32,7 +32,6 @@ namespace HauerHeinrich\HhSeo\ViewHelpers;
 
 // use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
-use \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use \Symfony\Component\Yaml\Yaml;
 
@@ -53,19 +52,12 @@ class MetaTagViewHelper extends AbstractViewHelper {
         }
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     *
-     * @return string
-     */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
-        $type = $arguments['type'];
-        $dataType = isset($arguments['dataType']) ? $arguments['dataType'] : 'ini';
-        $dataArray[$type] = $arguments;
+    public function render(): string {
+        $type = $this->arguments['type'];
+        $dataType = isset($this->arguments['dataType']) ? $this->arguments['dataType'] : 'ini';
+        $dataArray[$type] = $this->arguments;
         $childData = [];
-        $renderChildren = $renderChildrenClosure();
+        $renderChildren = $this->renderChildren();
 
         if(!empty(trim($renderChildren))) {
             if($dataType === 'yaml') {
@@ -85,9 +77,11 @@ class MetaTagViewHelper extends AbstractViewHelper {
                 $logger->error('EXT:hh_seo -> MetaTagViewHelper: parse_ini_string = false', ['iniArrayUnformated' => $iniArrayUnformated]);
             }
             $childData[$type] = $iniArrayUnformated;
-            $childData['overwrite'] = $arguments['overwrite'];
+            $childData['overwrite'] = $this->arguments['overwrite'];
         }
 
-        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['MetaTag'][$arguments['order']] = array_replace_recursive($dataArray, $childData);
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['hh_seo']['MetaTag'][$this->arguments['order']] = array_replace_recursive($dataArray, $childData);
+
+        return '';
     }
 }

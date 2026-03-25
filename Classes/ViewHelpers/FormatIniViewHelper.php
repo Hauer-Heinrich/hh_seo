@@ -31,7 +31,6 @@ namespace HauerHeinrich\HhSeo\ViewHelpers;
  */
 
 // use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
-use \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 class FormatIniViewHelper extends AbstractViewHelper {
@@ -50,29 +49,18 @@ class FormatIniViewHelper extends AbstractViewHelper {
         }
     }
 
-    /**
-     * make multiline string to single line string
-     * deletes unauthorized characters
-     * escapes douple qoutes
-     *
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     *
-     * @return string
-     */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
-        $renderChildren = $renderChildrenClosure() ? trim($renderChildrenClosure()) : $arguments['data'];
+    public function render(): string {
+        $renderChildren = $this->renderChildren() ? trim($this->renderChildren()) : $this->arguments['data'];
 
         if(empty($renderChildren)) {
             return '';
         }
 
-        if(isset($arguments['strip-tags']) && $arguments['strip-tags'] == true) {
+        if(isset($this->arguments['strip-tags']) && $this->arguments['strip-tags'] == true) {
             $renderChildren = \strip_tags($renderChildren);
         }
 
-        if(isset($arguments['urlencode']) && $arguments['urlencode'] == true) {
+        if(isset($this->arguments['urlencode']) && $this->arguments['urlencode'] == true) {
             $renderChildren = \urlencode($renderChildren);
         }
 

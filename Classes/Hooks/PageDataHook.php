@@ -8,12 +8,10 @@ use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use \TYPO3\CMS\Core\Page\PageRenderer;
 use \TYPO3\CMS\Core\Core\Environment;
 use \TYPO3\CMS\Core\Domain\Repository\PageRepository;
-use \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use \PedroBorges\MetaTags\MetaTags;
 
 class PageDataHook {
     protected PageRenderer $pageRenderer;
-    protected TypoScriptFrontendController $typoScriptFrontendController;
     protected PageRepository $pageRepository;
 
     protected array $currentPageProperties = [];
@@ -23,38 +21,13 @@ class PageDataHook {
     protected int $currentPageUid = 0;
 
     public function __construct() {
-        $this->currentPageUid = isset($GLOBALS['TSFE']->id) ? $GLOBALS['TSFE']->id : 1;
         $this->setAdditionalData();
         $this->pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
     }
 
     public function setAdditionalData(): void {
-        // old TYPO3
-        if(isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'])) {
-            $this->additionalData = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo'];
-        }
-
         if(isset($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['hh_seo'])) {
             $this->additionalData = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['hh_seo'];
-        }
-    }
-
-    /**
-     * Get the current language
-     *
-     * @param \TYPO3\CMS\Core\Http\ServerRequest $request
-     * @param string $attr - hreflang, base, locale, languageId, etc. from \TYPO3\CMS\Core\Site\Entity\SiteLanguage
-     * @return mixed
-     */
-    protected function getCurrentLanguage(\TYPO3\CMS\Core\Http\ServerRequest $request, $attr = null) {
-        $attr = ucfirst($attr);
-        $get = 'get'. $attr;
-        $language = $request->getAttribute('language');
-        try {
-            $value = $language->{$get}();
-            return $value;
-        } catch (\Throwable $th) {
-            throw $th;
         }
     }
 
@@ -62,6 +35,11 @@ class PageDataHook {
      * addPageData
     */
     public function addPageData(?array &$parameters = []): void {
+        /** @var ServerRequestInterface $request */
+        $request = $parameters['request'];
+
+        $this->currentPageUid = $request->getAttribute('frontend.page.information')->getId();
+
         $contentObjectRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::class);
         $htmlHead = $contentObjectRenderer->getData('levelfield : -1, html_head, slide');
         $htmlBodyTop = $contentObjectRenderer->getData('levelfield : -1, html_body_top, slide');
@@ -138,7 +116,6 @@ class PageDataHook {
             $request = $GLOBALS['TYPO3_REQUEST'];
 
             $this->pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'];
-            $this->typoScriptFrontendController = $GLOBALS['TSFE'] ?? GeneralUtility::makeInstance(TypoScriptFrontendController::class);
             $this->pageRepository = GeneralUtility::makeInstance(PageRepository::class);
             $this->url = rtrim($request->getUri()->getScheme() . '://' . $request->getUri()->getHost(), '/');
             $this->currentPageProperties = $this->pageRepository->getPage($request->getAttribute('routing')->getPageId());
@@ -163,10 +140,6 @@ class PageDataHook {
                 $title = $titleBefore . $fluidData['title'] . $titleAfter;
                 // outputs <title>...</title>
                 $tags->title($title);
-                // outputs <meta name="title" ...
-                // $titleManager = $metaTagManagerRegistry->getManagerForProperty('title');
-                // $titleManager->removeProperty('title');
-                // $titleManager->addProperty('title', $title);
             }
 
             if(isset($fluidData['keywords'])) {
@@ -245,6 +218,7 @@ class PageDataHook {
                     $shortcutIconPublicUrl = $this->url . $image->getPublicUrl();
                 }
 
+                // @extensionScannerIgnoreLine
                 $tags->link('shortcut icon', ltrim($shortcutIconPublicUrl, '/'));
             }
 
@@ -301,6 +275,7 @@ class PageDataHook {
 
             if(isset($fluidData['link']) && \is_array($fluidData['link'])) {
                 foreach ($fluidData['link'] as $key => $value) {
+                    // @extensionScannerIgnoreLine
                     $tags->link($key, $value);
                 }
             }

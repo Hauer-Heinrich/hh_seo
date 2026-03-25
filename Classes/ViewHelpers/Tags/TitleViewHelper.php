@@ -31,7 +31,6 @@ namespace HauerHeinrich\HhSeo\ViewHelpers\Tags;
  */
 
 // use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
-use \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -55,14 +54,7 @@ class TitleViewHelper extends AbstractViewHelper {
         }
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     *
-     * @return string
-     */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
+    public function render(): string {
         $configurationManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
 
         $typoScript = $configurationManager->getConfiguration(
@@ -70,21 +62,23 @@ class TitleViewHelper extends AbstractViewHelper {
             'hhseo'
         );
 
-        $separate = $arguments['separate'] ? $arguments['separate'] : ' ' . $typoScript['separate'] . ' ';
-        $bSeparate = $arguments['beforeSeparate'] ? $arguments['beforeSeparate'] : ' ' . $typoScript['beforeSeparate'] . ' ';
-        $aSeparate = $arguments['afterSeparate'] ? $arguments['afterSeparate'] : ' ' . $typoScript['afterSeparate'] . ' ';
+        $separate = $this->arguments['separate'] ? $this->arguments['separate'] : ' ' . $typoScript['separate'] . ' ';
+        $bSeparate = $this->arguments['beforeSeparate'] ? $this->arguments['beforeSeparate'] : ' ' . $typoScript['beforeSeparate'] . ' ';
+        $aSeparate = $this->arguments['afterSeparate'] ? $this->arguments['afterSeparate'] : ' ' . $typoScript['afterSeparate'] . ' ';
 
         $beforeSeparate = '';
-        if(!empty($arguments['before'])) {
-            $beforeSeparate = trim($bSeparate) ? $arguments['before'] . $bSeparate : $arguments['before'] . $separate;
+        if(!empty($this->arguments['before'])) {
+            $beforeSeparate = trim($bSeparate) ? $this->arguments['before'] . $bSeparate : $this->arguments['before'] . $separate;
         }
 
         $afterSeparate = '';
-        if(!empty($arguments['after'])) {
-            $afterSeparate = trim($aSeparate) ? $aSeparate . $arguments['after'] : $separate . $arguments['after'];
+        if(!empty($this->arguments['after'])) {
+            $afterSeparate = trim($aSeparate) ? $aSeparate . $this->arguments['after'] : $separate . $this->arguments['after'];
         }
 
-        $content = $beforeSeparate . $arguments['content'] . $afterSeparate;
-        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['title'][$arguments['order']] = trim($content);
+        $content = $beforeSeparate . $this->arguments['content'] . $afterSeparate;
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['hh_seo']['title'][$this->arguments['order']] = trim($content);
+
+        return '';
     }
 }

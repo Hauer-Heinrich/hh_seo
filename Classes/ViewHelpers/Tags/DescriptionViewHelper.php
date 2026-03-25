@@ -49,14 +49,9 @@ class DescriptionViewHelper extends AbstractViewHelper {
         }
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     *
-     * @return string
-     */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
-        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['hh_seo']['description'][$arguments['order']] = $arguments['content'];
+    public function render(): string {
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['hh_seo']['description'][$this->arguments['order']] = $this->arguments['content'];
+
+        return '';
     }
 }
