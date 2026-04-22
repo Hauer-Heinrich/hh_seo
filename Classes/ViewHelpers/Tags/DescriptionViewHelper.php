@@ -31,12 +31,11 @@ namespace HauerHeinrich\HhSeo\ViewHelpers\Tags;
  */
 
 // use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
-use \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 class DescriptionViewHelper extends AbstractViewHelper {
 
-    public function initializeArguments() {
+    public function initializeArguments(): void {
         $this->registerArguments([
             ['order', 'int', 'Ordering int', true],
             ['content', 'string', 'description meta-tag', true],

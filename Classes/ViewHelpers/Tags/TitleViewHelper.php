@@ -36,7 +36,7 @@ use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class TitleViewHelper extends AbstractViewHelper {
 
-    public function initializeArguments() {
+    public function initializeArguments(): void {
         $this->registerArguments([
             ['order', 'int', 'Ordering int', true],
             ['content', 'string', 'title meta-tag', true],

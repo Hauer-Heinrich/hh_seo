@@ -35,7 +35,7 @@ use \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 class FormatYamlViewHelper extends AbstractViewHelper {
 
-    public function initializeArguments() {
+    public function initializeArguments(): void {
         $this->registerArguments([
             ['data', 'string', 'String', false],
             ['strip-tags', 'bool', 'Delete HTML-Tags?', false, false],
