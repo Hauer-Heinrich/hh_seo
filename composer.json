@@ -41,7 +41,11 @@
         "typo3/cms": {
             "cms-package-dir": "{$vendor-dir}/typo3/cms",
             "web-dir": ".Build/Web",
-            "extension-key": "hh_seo"
+            "extension-key": "hh_seo",
+            "version": "0.10.0",
+            "Package": {
+                "providesPackages": {}
+            }
         }
     }
 }
