@@ -23,7 +23,7 @@ class EventModifyPageLayoutContent {
             !ExtensionManagementUtility::isLoaded('cs_seo')
             && !ExtensionManagementUtility::isLoaded('yoast_seo')
         ) {
-            $languageId = $this->getLanguageId($event->getRequest());
+            $languageId = $this->getLanguageId();
             $selectedPageUid = (int)$event->getRequest()->getQueryParams()['id'] ?? 0;
             $currentPage = $this->getCurrentPage($selectedPageUid, $languageId);
 
@@ -53,6 +53,8 @@ class EventModifyPageLayoutContent {
             }
 
             $event->addHeaderContent($this->renderHtml($options));
+
+            $event->setFooterContent('Overwrite footer content');
         }
     }
 
@@ -100,9 +102,15 @@ class EventModifyPageLayoutContent {
         return $currentPage;
     }
 
-    protected function getLanguageId(\Psr\Http\Message\ServerRequestInterface $request): int {
-        $moduleData = $request->getAttribute('moduleData');
-        return (int)($moduleData?->get('language') ?? 0);
+    /**
+     * getLanguageId
+     *
+     * @return integer
+     */
+    protected function getLanguageId(): int {
+        $moduleData = (array)BackendUtility::getModuleData(['language'], [], 'web_layout');
+
+        return (int)$moduleData['language'];
     }
 
     /**
