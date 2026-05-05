@@ -42,15 +42,10 @@ class PageDataHook {
 
         $contentObjectRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::class);
         $htmlHead = $contentObjectRenderer->getData('levelfield : -1, html_head, slide');
-        $htmlBodyTop = $contentObjectRenderer->getData('levelfield : -1, html_body_top, slide');
         $htmlBodyBottom = $contentObjectRenderer->getData('levelfield : -1, html_body_bottom, slide');
 
         if (!empty($htmlHead)) {
             $this->setHTMLCodeHead($htmlHead);
-        }
-
-        if (!empty($htmlBodyTop)) {
-            $this->setHTMLCodeBodyTop($htmlBodyTop);
         }
 
         if (!empty($htmlBodyBottom)) {
@@ -465,16 +460,6 @@ class PageDataHook {
      */
     public function setHTMLCodeHead(string $data): void {
         $this->pageRenderer->addHeaderData($data);
-    }
-
-    /**
-     * Set your custom HTML Code
-     */
-    public function setHTMLCodeBodyTop(string $data): void {
-        $bodyContent = $this->pageRenderer->getBodyContent();
-        if(!empty($bodyContent)) {
-            $this->pageRenderer->setBodyContent(substr_replace($bodyContent, $data, 1+strpos($bodyContent, '>'), 0));
-        }
     }
 
     /**

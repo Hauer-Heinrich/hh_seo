@@ -4,15 +4,19 @@ declare(strict_types=1);
 namespace HauerHeinrich\HhSeo\EventListener;
 
 
-use \Psr\Http\Message\ServerRequestInterface;
 // use \TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use \TYPO3\CMS\Core\Attribute\AsEventListener;
 use \TYPO3\CMS\Backend\Utility\BackendUtility;
 use \TYPO3\CMS\Backend\Controller\Event\ModifyPageLayoutContentEvent;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use \TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use \TYPO3\CMS\Core\View\ViewFactoryInterface;
 
-class EventModifyPageLayoutContent {
+#[AsEventListener(
+    identifier: 'hh-seo/event-modify-page-layout-content',
+    event: ModifyPageLayoutContentEvent::class,
+)]
+final readonly class EventModifyPageLayoutContent {
     public function __construct(
         private readonly ViewFactoryInterface $viewFactory
     ) {
@@ -110,7 +114,7 @@ class EventModifyPageLayoutContent {
     protected function getLanguageId(): int {
         $moduleData = (array)BackendUtility::getModuleData(['language'], [], 'web_layout');
 
-        return (int)$moduleData['language'];
+        return isset($moduleData['language'][0]) ? (int)$moduleData['language'][0] : 0;
     }
 
     /**

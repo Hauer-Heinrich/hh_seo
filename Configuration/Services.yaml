@@ -6,16 +6,3 @@ services:
 
   HauerHeinrich\HhSeo\:
     resource: '../Classes/*'
-
-  HauerHeinrich\HhSeo\EventListener\EventModifyUrlForCanonicalTag:
-    tags:
-      - name: event.listener
-        identifier: 'hh-seo/ModifyUrlForCanonicalTag'
-        before: 'typo3-seo/hreflangGenerator'
-        event: TYPO3\CMS\Seo\Event\ModifyUrlForCanonicalTagEvent
-
-  HauerHeinrich\HhSeo\EventListener\EventModifyPageLayoutContent:
-      tags:
-        - name: event.listener
-          identifier: 'hh-seo/event-modify-page-layout-content'
-          event: TYPO3\CMS\Backend\Controller\Event\ModifyPageLayoutContentEvent
