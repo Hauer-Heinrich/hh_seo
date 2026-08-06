@@ -110,7 +110,7 @@ class PageDataHook {
             $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
             $request = $GLOBALS['TYPO3_REQUEST'];
 
-            $this->pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'];
+            $this->pluginSettings = $extbaseFrameworkConfiguration['plugin.']['tx_hhseo.'] ?? [];
             $this->pageRepository = GeneralUtility::makeInstance(PageRepository::class);
             $this->url = rtrim($request->getUri()->getScheme() . '://' . $request->getUri()->getHost(), '/');
             $this->currentPageProperties = $this->pageRepository->getPage($request->getAttribute('routing')->getPageId());
