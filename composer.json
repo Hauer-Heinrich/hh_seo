@@ -1,8 +1,10 @@
 {
-    "name": "hauerheinrich/hh-seo",
     "type": "typo3-cms-extension",
+    "name": "hauerheinrich/hh-seo",
     "description": "Hauer-Heinrich - fluid seo. Sets meta-tags over fluid template.",
+    "keywords": [ "TYPO3 CMS", "SEO", "Extension" ],
     "homepage": "https://www.hauer-heinrich.de",
+    "license": [ "GPL-2.0-or-later" ],
     "authors": [
         {
             "name": "Christian Hackl",
@@ -21,12 +23,6 @@
             "url": "https://www.paypal.com/paypalme/hauerheinrich"
         }
     ],
-    "license": [ "GPL-2.0-or-later" ],
-    "keywords": [ "TYPO3 CMS", "SEO", "Extension" ],
-    "replace": {
-        "hauer-heinrich/hh_seo": "self.version",
-        "typo3-ter/hh-seo": "self.version"
-    },
     "require": {
         "typo3/cms-core": "^13.4.0 || ^14.3.0",
         "typo3/cms-seo": "^13.4.0 || ^14.3.0"
@@ -42,10 +38,28 @@
             "cms-package-dir": "{$vendor-dir}/typo3/cms",
             "web-dir": ".Build/Web",
             "extension-key": "hh_seo",
-            "version": "0.11.0",
+            "version": "1.0.0",
             "Package": {
                 "providesPackages": []
             }
         }
+    },
+    "archive": {
+        "exclude": [
+            "/.git/",
+            "/.github/",
+            "/.idea/",
+            "/.editorconfig",
+            "/.gitattributes",
+            "/.gitignore",
+            "/.bundle.config.json",
+            "/.bundle.config.json.example",
+            "/.bundle.mjs",
+            "/package.json",
+            "/package-lock.json",
+            "/*.code-workspace",
+            "**/node_modules/",
+            "**/*.zip"
+        ]
     }
 }

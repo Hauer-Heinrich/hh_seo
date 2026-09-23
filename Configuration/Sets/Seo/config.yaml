@@ -1,5 +1,0 @@
-name: hauerheinrich/hh-seo
-label: hh_seo, main set
-
-dependencies:
-  - typo3/seo-sitemap
